@@ -1,7 +1,9 @@
 package main
 
-import ()
+import (
+	"github.com/CapillarySoftware/goforward/start"
+)
 
 func main() {
-
+	start.Run()
 }
