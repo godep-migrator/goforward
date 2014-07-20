@@ -5,9 +5,9 @@ import (
 	// "bufio"
 	// "errors"
 	// "github.com/jeromer/syslogparser"
-	// "github.com/jeromer/syslogparser/rfc3164"
-	// "github.com/jeromer/syslogparser/rfc5424"
 	"fmt"
+	"github.com/jeromer/syslogparser/rfc3164"
+	"github.com/jeromer/syslogparser/rfc5424"
 )
 
 //Define RFC syslog formats supported
