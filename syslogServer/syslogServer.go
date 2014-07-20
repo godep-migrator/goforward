@@ -2,12 +2,12 @@ package syslogServer
 
 // Syslog Server with defined settings for RFC format and connection type.
 import (
-	"bufio"
-	"errors"
-	"github.com/jeromer/syslogparser"
-	"github.com/jeromer/syslogparser/rfc3164"
-	"github.com/jeromer/syslogparser/rfc5424"
-	"net"
+	// "bufio"
+	// "errors"
+	// "github.com/jeromer/syslogparser"
+	// "github.com/jeromer/syslogparser/rfc3164"
+	// "github.com/jeromer/syslogparser/rfc5424"
+	"fmt"
 )
 
 //Define RFC syslog formats supported
@@ -26,9 +26,12 @@ const (
 	UDP ConnectionType = 2
 )
 
+type SyslogMessage interface {
+}
+
 //SyslogServer interface
 type SyslogService interface {
-	getMsg() (msg SyslogMessage, err error)
+	GetLog() (SyslogMessage, error)
 }
 
 //Basic service struct.
@@ -44,17 +47,15 @@ type Service struct {
 	// lastError   error
 }
 
-type SyslogMessage interface {
-}
-
 //Main server thread.
-func Run(server *SyslogService) {
+func Run(server SyslogService) {
 	for {
-		msg, err := server.getMsg()
+		msg, err := server.GetLog()
 		if nil != err {
-			fmt.Prinln(err)
+			fmt.Println(err)
 		}
-		fmt.Println("Got Mesg: ", msg)
+		fmt.Println("Msg: ", msg)
+
 	}
 
 }

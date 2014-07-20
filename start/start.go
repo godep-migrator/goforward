@@ -8,5 +8,5 @@ import (
 //Main run loop for our package.
 func Run() {
 	fmt.Println("Starting goforward")
-	_ = syslogServer
+	_ = syslogServer.RFC3164
 }
