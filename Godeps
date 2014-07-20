@@ -1,0 +1,13 @@
+{
+	"ImportPath": "github.com/CapillarySoftware/goforward",
+	"GoVersion": "go1.2.1",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/jeromer/syslogparser",
+			"Rev": "812866d0389ae7e1f5a0110d47dea20224fc776f"
+		}
+	]
+}
