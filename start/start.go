@@ -2,21 +2,25 @@ package start
 
 import (
 	"fmt"
+	"github.com/CapillarySoftware/goforward/forward"
 	"github.com/CapillarySoftware/goforward/msgService"
-	. "github.com/CapillarySoftware/goforward/syslogService"
+	sys "github.com/CapillarySoftware/goforward/syslogService"
 	"time"
 )
 
 //Main run loop for our package.
 func Run() {
 	fmt.Println("Starting goforward")
-	serv := SyslogService{ConType: TCP,
-		RFCFormat: RFC3164,
-		Port:      "514"}
 
-	go msgService.Run(&serv)
+	msgForwardChan := make(chan *[]msgService.ForwardMessage, 1000)
 
+	serv := sys.SyslogService{ConType: sys.TCP,
+		RFCFormat: sys.RFC3164,
+		Port:      "2024"}
+
+	go msgService.Run(&serv, msgForwardChan)
+	go forward.Run(msgForwardChan)
 	for {
-		time.Sleep(1000)
+		time.Sleep(1000 * time.Millisecond)
 	}
 }

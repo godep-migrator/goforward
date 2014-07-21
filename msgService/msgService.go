@@ -12,11 +12,11 @@ type ForwardMessage interface {
 //SyslogServer interface
 type Service interface {
 	Bind() error
-	GetMsg() (ForwardMessage, error)
+	SendMessages(chan *[]ForwardMessage) error
 }
 
 //Main server thread.
-func Run(server Service) {
+func Run(server Service, msgsChan chan *[]ForwardMessage) {
 	for {
 		err := server.Bind()
 		if nil != err {
@@ -26,13 +26,9 @@ func Run(server Service) {
 			break
 		}
 	}
-	for {
-		msg, err := server.GetMsg()
-		if nil != err {
-			fmt.Println(err)
-		}
-		fmt.Println("Msg: ", msg)
-
+	err := server.SendMessages(msgsChan)
+	if nil != err {
+		fmt.Println(err)
 	}
 
 }
