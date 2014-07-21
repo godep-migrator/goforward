@@ -45,12 +45,12 @@ func (s *SyslogService) Bind() (err error) {
 }
 
 //Get message from syslog socket
-func (s *SyslogService) GetMsg() (msg ForwardMessage, err error) {
+func (s *SyslogService) SendMessages(msgsChan chan *[]ForwardMessage) (err error) {
 
 	s.conn, err = s.ln.Accept()
 	if err != nil {
 		return
 	}
 
-	return msg, err
+	return err
 }
