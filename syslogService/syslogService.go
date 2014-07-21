@@ -33,7 +33,6 @@ type SyslogService struct {
 	RFCFormat Format
 	Port      string
 	ln        net.Listener
-	conn      net.Conn
 }
 
 //Bind to syslog socket
@@ -47,22 +46,24 @@ func (s *SyslogService) Bind() (err error) {
 
 //Get message from syslog socket
 func (s *SyslogService) SendMessages(msgsChan chan *[]ForwardMessage) (err error) {
+
 	for {
-		s.conn, err = s.ln.Accept()
+		var conn net.Conn
+		conn, err = s.ln.Accept()
 		if err != nil {
 			return
 		}
-		go s.ScanForMsgs(s.conn)
+		go ScanForMsgs(conn, msgsChan, s.RFCFormat)
 	}
 	return
 }
 
 //Scan and parse messages
-func (s *SyslogService) ScanForMsgs(conn net.Conn) (msgs *[]ForwardMessage, err error) {
+func ScanForMsgs(conn net.Conn, msgsChan chan *[]ForwardMessage, format Format) {
 
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
-		parser := rfc3164.NewParser([]byte(scanner.Text()))
+		parser := rfc3164.NewParser([]byte(scanner.Text())) //TODO: Create interface for parsers and pass it to func
 		fmt.Println("Parser: ", parser)
 	}
 	conn.Close()
