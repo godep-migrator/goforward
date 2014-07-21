@@ -47,14 +47,14 @@ func (s *SyslogService) Bind() (err error) {
 
 //Get message from syslog socket
 func (s *SyslogService) SendMessages(msgsChan chan *[]ForwardMessage) (err error) {
-
-	s.conn, err = s.ln.Accept()
-	if err != nil {
-		return
+	for {
+		s.conn, err = s.ln.Accept()
+		if err != nil {
+			return
+		}
+		go s.ScanForMsgs(s.conn)
 	}
-	go s.ScanForMsgs(s.conn)
-
-	return err
+	return
 }
 
 //Scan and parse messages
