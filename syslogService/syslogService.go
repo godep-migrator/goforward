@@ -1,10 +1,11 @@
-package SyslogService
+package syslogService
 
 import (
 	// "errors"
 	// 	"github.com/jeromer/syslogparser"
 	// 	"github.com/jeromer/syslogparser/rfc3164"
 	// 	"github.com/jeromer/syslogparser/rfc5424"
+	// "fmt"
 	. "github.com/CapillarySoftware/goforward/msgService"
 	"net"
 )
@@ -40,18 +41,16 @@ func (s *SyslogService) Bind() (err error) {
 	if err != nil {
 		return
 	}
-	for {
-		s.conn, err = s.ln.Accept()
-		if err != nil {
-			return
-		}
-
-	}
 	return
 }
 
 //Get message from syslog socket
 func (s *SyslogService) GetMsg() (msg ForwardMessage, err error) {
+
+	s.conn, err = s.ln.Accept()
+	if err != nil {
+		return
+	}
 
 	return msg, err
 }

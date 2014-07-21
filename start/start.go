@@ -17,6 +17,6 @@ func Run() {
 	go msgService.Run(&serv)
 
 	for {
-		time.Sleep(1000)
+		time.Sleep(1000 * time.Millisecond)
 	}
 }
