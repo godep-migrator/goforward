@@ -3,9 +3,10 @@ package syslogService
 import (
 	// "errors"
 	// 	"github.com/jeromer/syslogparser"
-	// 	"github.com/jeromer/syslogparser/rfc3164"
+	"bufio"
+	"github.com/jeromer/syslogparser/rfc3164"
 	// 	"github.com/jeromer/syslogparser/rfc5424"
-	// "fmt"
+	"fmt"
 	. "github.com/CapillarySoftware/goforward/msgService"
 	"net"
 )
@@ -51,6 +52,19 @@ func (s *SyslogService) SendMessages(msgsChan chan *[]ForwardMessage) (err error
 	if err != nil {
 		return
 	}
+	go s.ScanForMsgs(s.conn)
 
 	return err
+}
+
+//Scan and parse messages
+func (s *SyslogService) ScanForMsgs(conn net.Conn) (msgs *[]ForwardMessage, err error) {
+
+	scanner := bufio.NewScanner(conn)
+	for scanner.Scan() {
+		parser := rfc3164.NewParser([]byte(scanner.Text()))
+		fmt.Println("Parser: ", parser)
+	}
+
+	return
 }
