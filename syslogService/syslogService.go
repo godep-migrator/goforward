@@ -65,6 +65,7 @@ func (s *SyslogService) ScanForMsgs(conn net.Conn) (msgs *[]ForwardMessage, err 
 		parser := rfc3164.NewParser([]byte(scanner.Text()))
 		fmt.Println("Parser: ", parser)
 	}
+	conn.Close()
 
 	return
 }

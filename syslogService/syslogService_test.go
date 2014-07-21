@@ -27,7 +27,6 @@ var _ = Describe("SyslogService", func() {
 				RFCFormat: RFC3164,
 				Port:      "9099"}
 			err := serv.Bind()
-
 			Expect(err).Should(BeNil())
 
 		})
