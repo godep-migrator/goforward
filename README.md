@@ -2,4 +2,8 @@ goforward
 =========
 [![Build Status](https://travis-ci.org/CapillarySoftware/goforward.svg?branch=master)](https://travis-ci.org/CapillarySoftware/goforward)
 
-Log forwarding tool used to forward logs over zeromq with protobuffers
+forwarding tool used to forward syslog or json over zeromq with protobuffers
+
+install:
+
+go get github.com/CapillarySoftware/goforward
