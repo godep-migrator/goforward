@@ -2,13 +2,14 @@ package syslogService
 
 import (
 	// "errors"
-	// 	"github.com/jeromer/syslogparser"
 	"bufio"
+	// "github.com/jeromer/syslogparser"
 	"github.com/jeromer/syslogparser/rfc3164"
 	// 	"github.com/jeromer/syslogparser/rfc5424"
-	"fmt"
+	// "fmt"
 	. "github.com/CapillarySoftware/goforward/msgService"
 	"net"
+	"time"
 )
 
 //Define RFC syslog formats supported
@@ -45,8 +46,7 @@ func (s *SyslogService) Bind() (err error) {
 }
 
 //Get message from syslog socket
-func (s *SyslogService) SendMessages(msgsChan chan *[]ForwardMessage) (err error) {
-
+func (s *SyslogService) SendMessages(msgsChan chan *ForwardMessage) (err error) {
 	for {
 		var conn net.Conn
 		conn, err = s.ln.Accept()
@@ -59,12 +59,13 @@ func (s *SyslogService) SendMessages(msgsChan chan *[]ForwardMessage) (err error
 }
 
 //Scan and parse messages
-func ScanForMsgs(conn net.Conn, msgsChan chan *[]ForwardMessage, format Format) {
-
+func ScanForMsgs(conn net.Conn, msgsChan chan *ForwardMessage, format Format) {
+	conn.SetDeadline(time.Now().Add(120 * time.Second))
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
-		parser := rfc3164.NewParser([]byte(scanner.Text())) //TODO: Create interface for parsers and pass it to func
-		fmt.Println("Parser: ", parser)
+		msg := ForwardMessage(rfc3164.NewParser([]byte(scanner.Text()))) //TODO: Create interface for parsers and pass it to func
+		msgsChan <- &msg
+		conn.SetDeadline(time.Now().Add(120 * time.Second))
 	}
 	conn.Close()
 
