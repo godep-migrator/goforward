@@ -4,7 +4,7 @@ goforward
 
 forwarding tool used to forward syslog or json over zeromq with protobuffers
 
-install:
+<h3>install:</h3>
 <pre>
 <code>
 go get github.com/CapillarySoftware/goforward
