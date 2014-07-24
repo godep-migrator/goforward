@@ -49,7 +49,7 @@ func (s *SyslogService) Bind() (err error) {
 			var (
 				udpAddr *net.UDPAddr
 			)
-			udpAddr, err = net.ResolveUDPAddr("udp", "0.0.0.0:"+s.Port)
+			udpAddr, err = net.ResolveUDPAddr("udp", "127.0.0.1:"+s.Port)
 			if err != nil {
 				return err
 			}
@@ -80,28 +80,34 @@ func (s *SyslogService) SendMessages(msgsChan chan *ForwardMessage) (err error) 
 				if err != nil {
 					return
 				}
-				go ScanForMsgs(conn, msgsChan, s.RFCFormat)
+				go ScanForMsgs(conn, msgsChan, s.RFCFormat, 240)
 			}
 		}
 
 	case UDP:
 		{
-			go ScanForMsgs(s.udpConn, msgsChan, s.RFCFormat)
+			go ScanForMsgs(s.udpConn, msgsChan, s.RFCFormat, 0)
 		}
 	}
 	return
 }
 
 //Scan and parse messages
-func ScanForMsgs(conn net.Conn, msgsChan chan *ForwardMessage, format Format) {
-	conn.SetDeadline(time.Now().Add(120 * time.Second))
+func ScanForMsgs(conn net.Conn, msgsChan chan *ForwardMessage, format Format, timeout int) {
+	if timeout > 0 {
+		conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
+	}
+
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		txt := scanner.Text()
 		fmt.Println(txt)
 		msg := ForwardMessage(rfc3164.NewParser([]byte(txt))) //TODO: Create interface for parsers and pass it to func
 		msgsChan <- &msg
-		conn.SetDeadline(time.Now().Add(120 * time.Second))
+
+		if timeout > 0 {
+			conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
+		}
 	}
 	conn.Close()
 
