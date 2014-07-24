@@ -6,7 +6,7 @@ import (
 	// "github.com/jeromer/syslogparser"
 	"github.com/jeromer/syslogparser/rfc3164"
 	// 	"github.com/jeromer/syslogparser/rfc5424"
-	// "fmt"
+	"fmt"
 	. "github.com/CapillarySoftware/goforward/msgService"
 	"net"
 	"time"
@@ -34,11 +34,34 @@ type SyslogService struct {
 	RFCFormat Format
 	Port      string
 	ln        net.Listener
+	udpConn   *net.UDPConn
 }
 
 //Bind to syslog socket
 func (s *SyslogService) Bind() (err error) {
-	s.ln, err = net.Listen(string(s.ConType), ":"+s.Port)
+	switch s.ConType {
+	case TCP:
+		{
+			s.ln, err = net.Listen(string(s.ConType), "localhost:"+s.Port)
+		}
+	case UDP:
+		{
+			var (
+				udpAddr *net.UDPAddr
+			)
+			udpAddr, err = net.ResolveUDPAddr("udp", "0.0.0.0:"+s.Port)
+			if err != nil {
+				return err
+			}
+			s.udpConn, err = net.ListenUDP(string(s.ConType), udpAddr)
+		}
+	default:
+		{
+			fmt.Println("Failed to provide valid connection type : ", s.ConType)
+		}
+
+	}
+
 	if err != nil {
 		return
 	}
@@ -47,13 +70,24 @@ func (s *SyslogService) Bind() (err error) {
 
 //Get message from syslog socket
 func (s *SyslogService) SendMessages(msgsChan chan *ForwardMessage) (err error) {
-	for {
-		var conn net.Conn
-		conn, err = s.ln.Accept()
-		if err != nil {
-			return
+	switch s.ConType {
+	case TCP:
+		{
+
+			for {
+				var conn net.Conn
+				conn, err = s.ln.Accept()
+				if err != nil {
+					return
+				}
+				go ScanForMsgs(conn, msgsChan, s.RFCFormat)
+			}
 		}
-		go ScanForMsgs(conn, msgsChan, s.RFCFormat)
+
+	case UDP:
+		{
+			go ScanForMsgs(s.udpConn, msgsChan, s.RFCFormat)
+		}
 	}
 	return
 }
@@ -63,7 +97,9 @@ func ScanForMsgs(conn net.Conn, msgsChan chan *ForwardMessage, format Format) {
 	conn.SetDeadline(time.Now().Add(120 * time.Second))
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
-		msg := ForwardMessage(rfc3164.NewParser([]byte(scanner.Text()))) //TODO: Create interface for parsers and pass it to func
+		txt := scanner.Text()
+		fmt.Println(txt)
+		msg := ForwardMessage(rfc3164.NewParser([]byte(txt))) //TODO: Create interface for parsers and pass it to func
 		msgsChan <- &msg
 		conn.SetDeadline(time.Now().Add(120 * time.Second))
 	}
