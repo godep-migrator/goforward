@@ -1,0 +1,25 @@
+package syslogMessage;
+
+import "code.google.com/p/gogoprotobuf/gogoproto/gogo.proto";
+
+option (gogoproto.gostring_all) = true;
+option (gogoproto.equal_all) = true;
+option (gogoproto.verbose_equal_all) = true;
+option (gogoproto.goproto_stringer_all) = false;
+option (gogoproto.stringer_all) =  true;
+option (gogoproto.populate_all) = true;
+option (gogoproto.testgen_all) = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.marshaler_all) = true;
+option (gogoproto.sizer_all) = true;
+option (gogoproto.unmarshaler_all) = true;
+
+message protoRFC3164 {
+	optional int64 timestamp = 1;
+	optional string hostname = 2;
+	optional string tag	 = 3;
+	optional string content = 4;
+	optional int32 priority = 5;
+	optional int32 facility = 6;
+	optional int32 severity = 7;
+}

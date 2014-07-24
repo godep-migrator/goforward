@@ -3,11 +3,12 @@ package syslogService
 import (
 	// "errors"
 	"bufio"
-	// "github.com/jeromer/syslogparser"
+	"github.com/jeromer/syslogparser"
 	"github.com/jeromer/syslogparser/rfc3164"
 	// 	"github.com/jeromer/syslogparser/rfc5424"
 	"fmt"
 	. "github.com/CapillarySoftware/goforward/msgService"
+	. "github.com/CapillarySoftware/goforward/syslogMessage"
 	"net"
 	"time"
 )
@@ -101,8 +102,7 @@ func ScanForMsgs(conn net.Conn, msgsChan chan *ForwardMessage, format Format, ti
 	scanner := bufio.NewScanner(conn)
 	for scanner.Scan() {
 		txt := scanner.Text()
-		fmt.Println(txt)
-		msg := ForwardMessage(rfc3164.NewParser([]byte(txt))) //TODO: Create interface for parsers and pass it to func
+		msg := (rfc3164.NewParser([]byte(txt))) //TODO: Create interface for parsers and pass it to func
 		msgsChan <- &msg
 
 		if timeout > 0 {

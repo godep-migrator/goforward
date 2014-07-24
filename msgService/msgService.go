@@ -21,7 +21,7 @@ func Run(server Service, msgsChan chan *ForwardMessage) {
 		err := server.Bind()
 		if nil != err {
 			fmt.Println("error Binding to service: ", err)
-			time.Sleep(1000 * time.Millisecond)
+			time.Sleep(1 * time.Second)
 		} else {
 			break
 		}
