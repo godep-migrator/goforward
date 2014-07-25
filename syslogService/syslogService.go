@@ -10,7 +10,6 @@ import (
 	. "github.com/CapillarySoftware/goforward/msgService"
 	. "github.com/CapillarySoftware/goforward/syslogMessage"
 	"net"
-	"reflect"
 	"time"
 )
 
@@ -148,8 +147,6 @@ func RFC3164ToProto(lParts LogParts) (proto ProtoRFC3164, err error) {
 			}
 		case "tag":
 			{
-				t := reflect.TypeOf(v)
-				fmt.Println("Tag is of type ", t)
 				tag, ok := v.(string)
 				if !ok {
 					errors.New("Invalid tag, not of rfc3164 type")
