@@ -8,6 +8,6 @@ import (
 func Run(channel <-chan *msgService.ForwardMessage) {
 	for {
 		msgs := <-channel
-		fmt.Println("msgs: ", msgs)
+		fmt.Println("msg: ", msgs)
 	}
 }
