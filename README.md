@@ -9,9 +9,7 @@ if you want to re generate proto files run this from within the syslogMessage fo
 <code>
 go get -u code.google.com/p/gogoprotobuf/{proto,protoc-gen-gogo,gogoproto}
 protoc --gogo_out=. -I=.:code.google.com/p/gogoprotobuf/protobuf -I=$GOPATH/src/ -I=$GOPATH/src/code.google.com/p/gogoprotobuf/protobuf *.proto
-=======
-forwarding tool used to forward syslog or json over zeromq with protobuffers
-
+</code></pre>
 <h3>install</h3>
 <pre>
 <code>
