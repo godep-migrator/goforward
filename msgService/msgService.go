@@ -7,21 +7,22 @@ import (
 )
 
 type ForwardMessage interface {
+	String() string
 }
 
 //SyslogServer interface
 type Service interface {
 	Bind() error
-	SendMessages(chan *[]ForwardMessage) error
+	SendMessages(chan ForwardMessage) error
 }
 
 //Main server thread.
-func Run(server Service, msgsChan chan *[]ForwardMessage) {
+func Run(server Service, msgsChan chan ForwardMessage) {
 	for {
 		err := server.Bind()
 		if nil != err {
 			fmt.Println("error Binding to service: ", err)
-			time.Sleep(1000 * time.Millisecond)
+			time.Sleep(1 * time.Second)
 		} else {
 			break
 		}

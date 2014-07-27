@@ -12,9 +12,9 @@ import (
 func Run() {
 	fmt.Println("Starting goforward")
 
-	msgForwardChan := make(chan *[]msgService.ForwardMessage, 1000)
+	msgForwardChan := make(chan msgService.ForwardMessage, 1000)
 
-	serv := sys.SyslogService{ConType: sys.TCP,
+	serv := sys.SyslogService{ConType: sys.UDP,
 		RFCFormat: sys.RFC3164,
 		Port:      "2024"}
 
