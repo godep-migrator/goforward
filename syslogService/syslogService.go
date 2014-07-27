@@ -106,15 +106,22 @@ func SendMessagesFromSocket(conn net.Conn, msgsChan chan ForwardMessage, format 
 	)
 
 	for scanner.Scan() {
-		txt := scanner.Text()
-		msg := rfc3164.NewParser([]byte(txt))
-		msg.Parse()
-		proto, err = RFC3164ToProto(msg.Dump())
-		if nil != err {
-			fmt.Println("error: ", err)
+		switch format {
+		case RFC3164:
+			{
+				proto, err = ProcessRfc3164(scanner)
+			}
+		case RFC5423:
+			{
+				errors.New("RFC5423 not implemented yet...")
+
+			}
 		}
-		// fmt.Println(proto.GoString())
-		msgsChan <- proto
+		if nil != err {
+			fmt.Println("error:", err)
+		} else {
+			msgsChan <- proto
+		}
 
 		if timeout > 0 {
 			conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
@@ -122,6 +129,14 @@ func SendMessagesFromSocket(conn net.Conn, msgsChan chan ForwardMessage, format 
 	}
 	conn.Close()
 
+	return
+}
+
+//Process rfc3164 message from bufio scanner and return a proto message
+func ProcessRfc3164(scanner *bufio.Scanner) (proto *ProtoRFC3164, err error) {
+	msg := rfc3164.NewParser([]byte(scanner.Text()))
+	msg.Parse()
+	proto, err = RFC3164ToProto(msg.Dump())
 	return
 }
 
