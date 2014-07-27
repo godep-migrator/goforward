@@ -70,7 +70,7 @@ func (s *SyslogService) Bind() (err error) {
 }
 
 //Get message from syslog socket
-func (s *SyslogService) SendMessages(msgsChan chan *ForwardMessage) (err error) {
+func (s *SyslogService) SendMessages(msgsChan chan ForwardMessage) (err error) {
 	switch s.ConType {
 	case TCP:
 		{
@@ -94,23 +94,27 @@ func (s *SyslogService) SendMessages(msgsChan chan *ForwardMessage) (err error) 
 }
 
 //Scan and parse messages
-func SendMessagesFromSocket(conn net.Conn, msgsChan chan *ForwardMessage, format Format, timeout int) {
+func SendMessagesFromSocket(conn net.Conn, msgsChan chan ForwardMessage, format Format, timeout int) {
 	if timeout > 0 {
 		conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
 	}
 
 	scanner := bufio.NewScanner(conn)
+	var (
+		proto ForwardMessage
+		err   error
+	)
 
 	for scanner.Scan() {
 		txt := scanner.Text()
 		msg := rfc3164.NewParser([]byte(txt))
 		msg.Parse()
-		proto, err := RFC3164ToProto(msg.Dump())
+		proto, err = RFC3164ToProto(msg.Dump())
 		if nil != err {
 			fmt.Println("error: ", err)
 		}
-		fmt.Println(proto.GoString())
-		// msgsChan <- &msg
+		// fmt.Println(proto.GoString())
+		msgsChan <- proto
 
 		if timeout > 0 {
 			conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
@@ -121,7 +125,9 @@ func SendMessagesFromSocket(conn net.Conn, msgsChan chan *ForwardMessage, format
 	return
 }
 
-func RFC3164ToProto(lParts LogParts) (proto ProtoRFC3164, err error) {
+//RFC3164 conversion to protobuffers
+func RFC3164ToProto(lParts LogParts) (proto *ProtoRFC3164, err error) {
+	proto = new(ProtoRFC3164)
 	for k, v := range lParts {
 		switch k {
 		case "timestamp":
