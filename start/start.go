@@ -1,5 +1,6 @@
 package start
 
+//Start manages the main run loop of the application
 import (
 	"flag"
 	"fmt"
@@ -14,16 +15,16 @@ import (
 	// "time "
 )
 
-//Main run loop for our package.
-
 var port = flag.Int("port", 514, "Syslog port you are going to listen on.")
 var protocol = flag.String("protocol", "udp", "Syslog protocol options (udp,tcp)")
 
+//Process protocol from input flags
 func ProcessProtocol(proto string) (protocol sys.ConnectionType) {
 	protocol = sys.ConnectionType(strings.ToLower(proto))
 	return
 }
 
+//Manage death of application by signal
 func Death(c <-chan os.Signal, death chan int) {
 	for sig := range c {
 		switch sig.String() {
@@ -44,6 +45,7 @@ func Death(c <-chan os.Signal, death chan int) {
 	}
 }
 
+//Run the app.
 func Run() {
 	flag.Parse()
 	fmt.Println("Starting goforward")
