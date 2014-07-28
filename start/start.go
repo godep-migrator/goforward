@@ -16,7 +16,7 @@ import (
 var port = flag.Int("port", 514, "Syslog port you are going to listen on.")
 var protocol = flag.String("protocol", "udp", "Syslog protocol options (udp,tcp)")
 
-func processProtocol(proto string) (protocol sys.ConnectionType) {
+func ProcessProtocol(proto string) (protocol sys.ConnectionType) {
 	protocol = sys.ConnectionType(strings.ToLower(proto))
 	return
 }
@@ -24,7 +24,7 @@ func processProtocol(proto string) (protocol sys.ConnectionType) {
 func Run() {
 	flag.Parse()
 	fmt.Println("Starting goforward")
-	proto := processProtocol(*protocol)
+	proto := ProcessProtocol(*protocol)
 
 	msgForwardChan := make(chan msgService.ForwardMessage, 1000)
 
