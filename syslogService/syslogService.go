@@ -132,8 +132,13 @@ func SendMessagesFromSocket(conn net.Conn, msgsChan chan ForwardMessage, format 
 	return
 }
 
+//simple interface to allow use to easily test
+type ScannerText interface {
+	Text() string
+}
+
 //Process rfc3164 message from bufio scanner and return a proto message
-func ProcessRfc3164(scanner *bufio.Scanner) (proto *ProtoRFC3164, err error) {
+func ProcessRfc3164(scanner ScannerText) (proto *ProtoRFC3164, err error) {
 	msg := rfc3164.NewParser([]byte(scanner.Text()))
 	msg.Parse()
 	proto, err = RFC3164ToProto(msg.Dump())
