@@ -6,9 +6,12 @@ import (
 	"github.com/CapillarySoftware/goforward/forward"
 	"github.com/CapillarySoftware/goforward/msgService"
 	sys "github.com/CapillarySoftware/goforward/syslogService"
+	"os"
+	"os/signal"
+	// "reflect"
 	"strconv"
 	"strings"
-	"time"
+	// "time "
 )
 
 //Main run loop for our package.
@@ -19,6 +22,26 @@ var protocol = flag.String("protocol", "udp", "Syslog protocol options (udp,tcp)
 func ProcessProtocol(proto string) (protocol sys.ConnectionType) {
 	protocol = sys.ConnectionType(strings.ToLower(proto))
 	return
+}
+
+func Death(c <-chan os.Signal, death chan int) {
+	for sig := range c {
+		switch sig.String() {
+		case "terminated":
+			{
+				death <- 1
+			}
+		case "interrupt":
+			{
+				death <- 2
+			}
+		default:
+			{
+				death <- 3
+			}
+		}
+
+	}
 }
 
 func Run() {
@@ -34,7 +57,12 @@ func Run() {
 
 	go msgService.Run(&serv, msgForwardChan)
 	go forward.Run(msgForwardChan)
-	for {
-		time.Sleep(1000 * time.Millisecond)
-	}
+	c := make(chan os.Signal, 1)
+	s := make(chan int, 1)
+	signal.Notify(c)
+	go Death(c, s)
+	death := <-s //time for shutdown
+	close(msgForwardChan)
+	fmt.Println(death)
+	fmt.Println("Exiting")
 }
