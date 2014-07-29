@@ -13,6 +13,10 @@ protoc --gogo_out=. -I=.:code.google.com/p/gogoprotobuf/protobuf -I=$GOPATH/src/
 <h3>install</h3>
 <pre>
 <code>
+//nanomsg
+http://nanomsg.org/download.html
+./configure && make && make check && sudo make install
+go get github.com/op/go-nanomsg
 go get github.com/CapillarySoftware/goforward
 </code>
 </pre>
