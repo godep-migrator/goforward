@@ -1,5 +1,7 @@
 package syslogService
 
+//Syslog service that receives syslog messages and forwards messages to perceptor
+
 import (
 	"bufio"
 	"errors"

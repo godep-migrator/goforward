@@ -6,8 +6,7 @@ import (
 )
 
 func Run(channel <-chan msgService.ForwardMessage) {
-	for {
-		msgs := <-channel
+	for msgs := range channel {
 		fmt.Println("msg: ", msgs)
 	}
 }
