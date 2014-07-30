@@ -3,16 +3,14 @@ package start
 //Start manages the main run loop of the application
 import (
 	"flag"
-	"fmt"
 	"github.com/CapillarySoftware/goforward/forward"
 	"github.com/CapillarySoftware/goforward/msgService"
 	sys "github.com/CapillarySoftware/goforward/syslogService"
+	log "github.com/cihub/seelog"
 	"os"
 	"os/signal"
-	// "reflect"
 	"strconv"
 	"strings"
-	// "time "
 )
 
 var port = flag.Int("port", 514, "Syslog port you are going to listen on.")
@@ -47,8 +45,9 @@ func Death(c <-chan os.Signal, death chan int) {
 
 //Run the app.
 func Run() {
+	log.Info("Starting goforward")
 	flag.Parse()
-	fmt.Println("Starting goforward")
+
 	proto := ProcessProtocol(*protocol)
 
 	msgForwardChan := make(chan msgService.ForwardMessage, 1000)
@@ -65,6 +64,6 @@ func Run() {
 	go Death(c, s)
 	death := <-s //time for shutdown
 	close(msgForwardChan)
-	fmt.Println(death)
-	fmt.Println("Exiting")
+	log.Debug("Death return code: ", death)
+	log.Info("Exiting")
 }

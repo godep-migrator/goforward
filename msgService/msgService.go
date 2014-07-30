@@ -3,6 +3,7 @@ package msgService
 // Syslog Server with defined settings for RFC format and connection type.
 import (
 	"fmt"
+	// log "github.com/cihub/seelog"
 	"time"
 )
 
