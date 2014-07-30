@@ -29,7 +29,7 @@ func Run(server Service, msgsChan chan ForwardMessage) {
 	}
 	err := server.SendMessages(msgsChan)
 	if nil != err {
-		fmt.Println(err)
+		log.Error(err)
 	}
 
 }
