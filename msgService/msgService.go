@@ -2,8 +2,7 @@ package msgService
 
 // Syslog Server with defined settings for RFC format and connection type.
 import (
-	"fmt"
-	// log "github.com/cihub/seelog"
+	log "github.com/cihub/seelog"
 	"time"
 )
 
@@ -22,7 +21,7 @@ func Run(server Service, msgsChan chan ForwardMessage) {
 	for {
 		err := server.Bind()
 		if nil != err {
-			fmt.Println("error Binding to service: ", err)
+			log.Error("error Binding to service: ", err)
 			time.Sleep(1 * time.Second)
 		} else {
 			break
