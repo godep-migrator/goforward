@@ -19,5 +19,7 @@ _cgo_export.*
 
 _testmain.go
 *.coverprofile
+goforward.log
+goforward.log*
 *.exe
 *.test
