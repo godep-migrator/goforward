@@ -18,6 +18,8 @@ _cgo_gotypes.go
 _cgo_export.*
 
 _testmain.go
-
+*.coverprofile
+goforward.log
+goforward.log*
 *.exe
 *.test

@@ -1,13 +1,12 @@
 package forward
 
 import (
-	"fmt"
 	"github.com/CapillarySoftware/goforward/msgService"
+	log "github.com/cihub/seelog"
 )
 
 func Run(channel <-chan msgService.ForwardMessage) {
-	for {
-		msgs := <-channel
-		fmt.Println("msg: ", msgs)
+	for msg := range channel {
+		log.Trace(msg)
 	}
 }

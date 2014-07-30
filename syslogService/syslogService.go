@@ -1,14 +1,16 @@
 package syslogService
 
+//Syslog service that receives syslog messages and forwards messages to perceptor
+
 import (
 	"bufio"
 	"errors"
 	. "github.com/jeromer/syslogparser"
 	"github.com/jeromer/syslogparser/rfc3164"
 	// 	"github.com/jeromer/syslogparser/rfc5424"
-	"fmt"
 	. "github.com/CapillarySoftware/goforward/msgService"
 	. "github.com/CapillarySoftware/goforward/syslogMessage"
+	log "github.com/cihub/seelog"
 	"net"
 	"time"
 )
@@ -58,7 +60,7 @@ func (s *SyslogService) Bind() (err error) {
 		}
 	default:
 		{
-			fmt.Println("Failed to provide valid connection type : ", s.ConType)
+			log.Warn("Failed to provide valid connection type : ", s.ConType)
 		}
 
 	}
@@ -118,7 +120,7 @@ func SendMessagesFromSocket(conn net.Conn, msgsChan chan ForwardMessage, format 
 			}
 		}
 		if nil != err {
-			fmt.Println("error:", err)
+			log.Error(err)
 		} else {
 			msgsChan <- proto
 		}
