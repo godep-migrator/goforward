@@ -45,14 +45,14 @@ func (s *SyslogService) Bind() (err error) {
 	switch s.ConType {
 	case TCP:
 		{
-			s.ln, err = net.Listen(string(s.ConType), "localhost:"+s.Port)
+			s.ln, err = net.Listen(string(s.ConType), ":"+s.Port)
 		}
 	case UDP:
 		{
 			var (
 				udpAddr *net.UDPAddr
 			)
-			udpAddr, err = net.ResolveUDPAddr("udp", "127.0.0.1:"+s.Port)
+			udpAddr, err = net.ResolveUDPAddr("udp", ":"+s.Port)
 			if err != nil {
 				return err
 			}
@@ -76,10 +76,10 @@ func (s *SyslogService) SendMessages(msgsChan chan ForwardMessage) (err error) {
 	switch s.ConType {
 	case TCP:
 		{
-
 			for {
 				var conn net.Conn
 				conn, err = s.ln.Accept()
+				log.Trace("Accepted connection")
 				if err != nil {
 					return
 				}
