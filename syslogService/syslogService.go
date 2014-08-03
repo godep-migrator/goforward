@@ -129,6 +129,7 @@ func SendMessagesFromSocket(conn net.Conn, msgsChan chan ForwardMessage, format 
 			conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
 		}
 	}
+	log.Debug("Closing connection")
 	conn.Close()
 
 	return
