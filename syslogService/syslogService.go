@@ -8,8 +8,8 @@ import (
 	. "github.com/jeromer/syslogparser"
 	"github.com/jeromer/syslogparser/rfc3164"
 	// 	"github.com/jeromer/syslogparser/rfc5424"
+	"github.com/CapillarySoftware/goforward/messaging"
 	. "github.com/CapillarySoftware/goforward/msgService"
-	. "github.com/CapillarySoftware/goforward/syslogMessage"
 	log "github.com/cihub/seelog"
 	"net"
 	"time"
@@ -141,16 +141,17 @@ type ScannerText interface {
 }
 
 //Process rfc3164 message from bufio scanner and return a proto message
-func ProcessRfc3164(scanner ScannerText) (proto *ProtoRFC3164, err error) {
+func ProcessRfc3164(scanner ScannerText) (food *messaging.Food, err error) {
 	msg := rfc3164.NewParser([]byte(scanner.Text()))
 	msg.Parse()
-	proto, err = RFC3164ToProto(msg.Dump())
+	food, err = RFC3164ToProto(msg.Dump())
 	return
 }
 
 //RFC3164 conversion to protobuffers
-func RFC3164ToProto(lParts LogParts) (proto *ProtoRFC3164, err error) {
-	proto = new(ProtoRFC3164)
+func RFC3164ToProto(lParts LogParts) (food *messaging.Food, err error) {
+	proto := new(messaging.Rfc3164)
+	pType := messaging.RFC3164
 	for k, v := range lParts {
 		switch k {
 		case "timestamp":
@@ -232,5 +233,9 @@ func RFC3164ToProto(lParts LogParts) (proto *ProtoRFC3164, err error) {
 			}
 		}
 	}
+	food = new(messaging.Food)
+	food.Type = &pType
+	food.Rfc3164 = append(food.Rfc3164, proto)
+	// food.Rfc3164 = proto
 	return
 }
