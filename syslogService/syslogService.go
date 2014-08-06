@@ -9,7 +9,6 @@ import (
 	"github.com/jeromer/syslogparser/rfc3164"
 	// 	"github.com/jeromer/syslogparser/rfc5424"
 	"github.com/CapillarySoftware/goforward/messaging"
-	. "github.com/CapillarySoftware/goforward/msgService"
 	log "github.com/cihub/seelog"
 	"net"
 	"time"
@@ -72,7 +71,7 @@ func (s *SyslogService) Bind() (err error) {
 }
 
 //Get message from syslog socket
-func (s *SyslogService) SendMessages(msgsChan chan ForwardMessage) (err error) {
+func (s *SyslogService) SendMessages(msgsChan chan messaging.Food) (err error) {
 	switch s.ConType {
 	case TCP:
 		{
@@ -96,14 +95,14 @@ func (s *SyslogService) SendMessages(msgsChan chan ForwardMessage) (err error) {
 }
 
 //Scan and parse messages
-func SendMessagesFromSocket(conn net.Conn, msgsChan chan ForwardMessage, format Format, timeout int) {
+func SendMessagesFromSocket(conn net.Conn, msgsChan chan messaging.Food, format Format, timeout int) {
 	if timeout > 0 {
 		conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
 	}
 
 	scanner := bufio.NewScanner(conn)
 	var (
-		proto ForwardMessage
+		proto *messaging.Food
 		err   error
 	)
 
@@ -122,7 +121,7 @@ func SendMessagesFromSocket(conn net.Conn, msgsChan chan ForwardMessage, format 
 		if nil != err {
 			log.Error(err)
 		} else {
-			msgsChan <- proto
+			msgsChan <- *proto
 		}
 
 		if timeout > 0 {

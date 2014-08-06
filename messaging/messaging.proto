@@ -56,5 +56,8 @@ message Food {
 	repeated Rfc3164 rfc3164 = 2;
 	repeated Rfc5424 rfc5424 = 3;
 	repeated Json json = 4;
+	optional string index = 5;
+	optional string indexType = 6;
+	optional string id = 7;
 
 }

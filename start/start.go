@@ -4,6 +4,7 @@ package start
 import (
 	"flag"
 	"github.com/CapillarySoftware/goforward/forward"
+	"github.com/CapillarySoftware/goforward/messaging"
 	"github.com/CapillarySoftware/goforward/msgService"
 	sys "github.com/CapillarySoftware/goforward/syslogService"
 	log "github.com/cihub/seelog"
@@ -50,7 +51,7 @@ func Run() {
 
 	proto := ProcessProtocol(*protocol)
 
-	msgForwardChan := make(chan msgService.ForwardMessage, 1000)
+	msgForwardChan := make(chan messaging.Food, 1000)
 
 	serv := sys.SyslogService{ConType: proto,
 		RFCFormat: sys.RFC3164,

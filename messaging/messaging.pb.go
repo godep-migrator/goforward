@@ -262,10 +262,13 @@ func (m *Json) GetJson() string {
 }
 
 type Food struct {
-	Type             *TYPES     `protobuf:"varint,1,req,enum=messaging.TYPES" json:"Type,omitempty"`
-	Rfc3164          []*Rfc3164 `protobuf:"bytes,2,rep" json:"Rfc3164,omitempty"`
-	Rfc5424          []*Rfc5424 `protobuf:"bytes,3,rep" json:"Rfc5424,omitempty"`
-	Json             []*Json    `protobuf:"bytes,4,rep" json:"Json,omitempty"`
+	Type             *TYPES     `protobuf:"varint,1,req,name=type,enum=messaging.TYPES" json:"type,omitempty"`
+	Rfc3164          []*Rfc3164 `protobuf:"bytes,2,rep,name=rfc3164" json:"rfc3164,omitempty"`
+	Rfc5424          []*Rfc5424 `protobuf:"bytes,3,rep,name=rfc5424" json:"rfc5424,omitempty"`
+	Json             []*Json    `protobuf:"bytes,4,rep,name=json" json:"json,omitempty"`
+	Index            *string    `protobuf:"bytes,5,opt,name=index" json:"index,omitempty"`
+	IndexType        *string    `protobuf:"bytes,6,opt,name=indexType" json:"indexType,omitempty"`
+	Id               *string    `protobuf:"bytes,7,opt,name=id" json:"id,omitempty"`
 	XXX_unrecognized []byte     `json:"-"`
 }
 
@@ -298,6 +301,27 @@ func (m *Food) GetJson() []*Json {
 		return m.Json
 	}
 	return nil
+}
+
+func (m *Food) GetIndex() string {
+	if m != nil && m.Index != nil {
+		return *m.Index
+	}
+	return ""
+}
+
+func (m *Food) GetIndexType() string {
+	if m != nil && m.IndexType != nil {
+		return *m.IndexType
+	}
+	return ""
+}
+
+func (m *Food) GetId() string {
+	if m != nil && m.Id != nil {
+		return *m.Id
+	}
+	return ""
 }
 
 func init() {
@@ -934,6 +958,75 @@ func (m *Food) Unmarshal(data []byte) error {
 			m.Json = append(m.Json, &Json{})
 			m.Json[len(m.Json)-1].Unmarshal(data[index:postIndex])
 			index = postIndex
+		case 5:
+			if wireType != 2 {
+				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + int(stringLen)
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[index:postIndex])
+			m.Index = &s
+			index = postIndex
+		case 6:
+			if wireType != 2 {
+				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + int(stringLen)
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[index:postIndex])
+			m.IndexType = &s
+			index = postIndex
+		case 7:
+			if wireType != 2 {
+				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + int(stringLen)
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[index:postIndex])
+			m.Id = &s
+			index = postIndex
 		default:
 			var sizeOfWire int
 			for {
@@ -1016,6 +1109,9 @@ func (this *Food) String() string {
 		`Rfc3164:` + strings.Replace(fmt.Sprintf("%v", this.Rfc3164), "Rfc3164", "Rfc3164", 1) + `,`,
 		`Rfc5424:` + strings.Replace(fmt.Sprintf("%v", this.Rfc5424), "Rfc5424", "Rfc5424", 1) + `,`,
 		`Json:` + strings.Replace(fmt.Sprintf("%v", this.Json), "Json", "Json", 1) + `,`,
+		`Index:` + valueToStringMessaging(this.Index) + `,`,
+		`IndexType:` + valueToStringMessaging(this.IndexType) + `,`,
+		`Id:` + valueToStringMessaging(this.Id) + `,`,
 		`XXX_unrecognized:` + fmt.Sprintf("%v", this.XXX_unrecognized) + `,`,
 		`}`,
 	}, "")
@@ -1146,6 +1242,18 @@ func (m *Food) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovMessaging(uint64(l))
 		}
+	}
+	if m.Index != nil {
+		l = len(*m.Index)
+		n += 1 + l + sovMessaging(uint64(l))
+	}
+	if m.IndexType != nil {
+		l = len(*m.IndexType)
+		n += 1 + l + sovMessaging(uint64(l))
+	}
+	if m.Id != nil {
+		l = len(*m.Id)
+		n += 1 + l + sovMessaging(uint64(l))
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -1325,8 +1433,20 @@ func NewPopulatedFood(r randyMessaging, easy bool) *Food {
 			this.Json[i] = NewPopulatedJson(r, easy)
 		}
 	}
+	if r.Intn(10) != 0 {
+		v25 := randStringMessaging(r)
+		this.Index = &v25
+	}
+	if r.Intn(10) != 0 {
+		v26 := randStringMessaging(r)
+		this.IndexType = &v26
+	}
+	if r.Intn(10) != 0 {
+		v27 := randStringMessaging(r)
+		this.Id = &v27
+	}
 	if !easy && r.Intn(10) != 0 {
-		this.XXX_unrecognized = randUnrecognizedMessaging(r, 5)
+		this.XXX_unrecognized = randUnrecognizedMessaging(r, 8)
 	}
 	return this
 }
@@ -1348,9 +1468,9 @@ func randUTF8RuneMessaging(r randyMessaging) rune {
 	return res
 }
 func randStringMessaging(r randyMessaging) string {
-	v25 := r.Intn(100)
-	tmps := make([]rune, v25)
-	for i := 0; i < v25; i++ {
+	v28 := r.Intn(100)
+	tmps := make([]rune, v28)
+	for i := 0; i < v28; i++ {
 		tmps[i] = randUTF8RuneMessaging(r)
 	}
 	return string(tmps)
@@ -1372,11 +1492,11 @@ func randFieldMessaging(data []byte, r randyMessaging, fieldNumber int, wire int
 	switch wire {
 	case 0:
 		data = encodeVarintPopulateMessaging(data, uint64(key))
-		v26 := r.Int63()
+		v29 := r.Int63()
 		if r.Intn(2) == 0 {
-			v26 *= -1
+			v29 *= -1
 		}
-		data = encodeVarintPopulateMessaging(data, uint64(v26))
+		data = encodeVarintPopulateMessaging(data, uint64(v29))
 	case 1:
 		data = encodeVarintPopulateMessaging(data, uint64(key))
 		data = append(data, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -1627,6 +1747,24 @@ func (m *Food) MarshalTo(data []byte) (n int, err error) {
 			i += n
 		}
 	}
+	if m.Index != nil {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintMessaging(data, i, uint64(len(*m.Index)))
+		i += copy(data[i:], *m.Index)
+	}
+	if m.IndexType != nil {
+		data[i] = 0x32
+		i++
+		i = encodeVarintMessaging(data, i, uint64(len(*m.IndexType)))
+		i += copy(data[i:], *m.IndexType)
+	}
+	if m.Id != nil {
+		data[i] = 0x3a
+		i++
+		i = encodeVarintMessaging(data, i, uint64(len(*m.Id)))
+		i += copy(data[i:], *m.Id)
+	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
 	}
@@ -1684,7 +1822,7 @@ func (this *Food) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings1.Join([]string{`&messaging.Food{` + `Type:` + valueToGoStringMessaging(this.Type, "messaging.TYPES"), `Rfc3164:` + fmt1.Sprintf("%#v", this.Rfc3164), `Rfc5424:` + fmt1.Sprintf("%#v", this.Rfc5424), `Json:` + fmt1.Sprintf("%#v", this.Json), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
+	s := strings1.Join([]string{`&messaging.Food{` + `Type:` + valueToGoStringMessaging(this.Type, "messaging.TYPES"), `Rfc3164:` + fmt1.Sprintf("%#v", this.Rfc3164), `Rfc5424:` + fmt1.Sprintf("%#v", this.Rfc5424), `Json:` + fmt1.Sprintf("%#v", this.Json), `Index:` + valueToGoStringMessaging(this.Index, "string"), `IndexType:` + valueToGoStringMessaging(this.IndexType, "string"), `Id:` + valueToGoStringMessaging(this.Id, "string"), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
 	return s
 }
 func valueToGoStringMessaging(v interface{}, typ string) string {
@@ -2275,6 +2413,33 @@ func (this *Food) VerboseEqual(that interface{}) error {
 			return fmt2.Errorf("Json this[%v](%v) Not Equal that[%v](%v)", i, this.Json[i], i, that1.Json[i])
 		}
 	}
+	if this.Index != nil && that1.Index != nil {
+		if *this.Index != *that1.Index {
+			return fmt2.Errorf("Index this(%v) Not Equal that(%v)", *this.Index, *that1.Index)
+		}
+	} else if this.Index != nil {
+		return fmt2.Errorf("this.Index == nil && that.Index != nil")
+	} else if that1.Index != nil {
+		return fmt2.Errorf("Index this(%v) Not Equal that(%v)", this.Index, that1.Index)
+	}
+	if this.IndexType != nil && that1.IndexType != nil {
+		if *this.IndexType != *that1.IndexType {
+			return fmt2.Errorf("IndexType this(%v) Not Equal that(%v)", *this.IndexType, *that1.IndexType)
+		}
+	} else if this.IndexType != nil {
+		return fmt2.Errorf("this.IndexType == nil && that.IndexType != nil")
+	} else if that1.IndexType != nil {
+		return fmt2.Errorf("IndexType this(%v) Not Equal that(%v)", this.IndexType, that1.IndexType)
+	}
+	if this.Id != nil && that1.Id != nil {
+		if *this.Id != *that1.Id {
+			return fmt2.Errorf("Id this(%v) Not Equal that(%v)", *this.Id, *that1.Id)
+		}
+	} else if this.Id != nil {
+		return fmt2.Errorf("this.Id == nil && that.Id != nil")
+	} else if that1.Id != nil {
+		return fmt2.Errorf("Id this(%v) Not Equal that(%v)", this.Id, that1.Id)
+	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return fmt2.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
 	}
@@ -2332,6 +2497,33 @@ func (this *Food) Equal(that interface{}) bool {
 		if !this.Json[i].Equal(that1.Json[i]) {
 			return false
 		}
+	}
+	if this.Index != nil && that1.Index != nil {
+		if *this.Index != *that1.Index {
+			return false
+		}
+	} else if this.Index != nil {
+		return false
+	} else if that1.Index != nil {
+		return false
+	}
+	if this.IndexType != nil && that1.IndexType != nil {
+		if *this.IndexType != *that1.IndexType {
+			return false
+		}
+	} else if this.IndexType != nil {
+		return false
+	} else if that1.IndexType != nil {
+		return false
+	}
+	if this.Id != nil && that1.Id != nil {
+		if *this.Id != *that1.Id {
+			return false
+		}
+	} else if this.Id != nil {
+		return false
+	} else if that1.Id != nil {
+		return false
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return false
