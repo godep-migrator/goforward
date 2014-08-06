@@ -23,7 +23,7 @@ func Run(channel <-chan messaging.Food) {
 	for msg := range channel {
 		index := "document"
 		indexType := "all"
-		id := string(uuid.NewRandom())
+		id := uuid.NewRandom().String()
 		msg.Index = &index
 		msg.IndexType = &indexType
 		msg.Id = &id
