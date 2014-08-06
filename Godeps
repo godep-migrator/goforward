@@ -19,6 +19,10 @@
 		{
 			"ImportPath": "github.com/jeromer/syslogparser",
 			"Rev": "812866d0389ae7e1f5a0110d47dea20224fc776f"
+		},
+		{
+			"ImportPath": "github.com/op/go-nanomsg",
+			"Rev": "56d628e7c641959b9dc713a83e21dc178aee25bd"
 		}
 	]
 }
