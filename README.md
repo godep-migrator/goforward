@@ -26,3 +26,10 @@ go get -u code.google.com/p/gogoprotobuf/{proto,protoc-gen-gogo,gogoproto}
 protoc --gogo_out=. -I=.:code.google.com/p/gogoprotobuf/protobuf -I=$GOPATH/src/ -I=$GOPATH/src/code.google.com/p/gogoprotobuf/protobuf *.proto
 </code></pre>
 
+<h3>Install statically linked version</h3>
+<pre>
+<code>
+go install --ldflags '-extldflags "-static"'  github.com/CapillarySoftware/gomasticate
+</code>
+</pre>
+
