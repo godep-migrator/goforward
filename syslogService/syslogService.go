@@ -101,16 +101,18 @@ func SendMessagesFromSocket(conn net.Conn, msgsChan chan messaging.Food, format 
 	}
 
 	scanner := bufio.NewScanner(conn)
+
 	var (
 		proto *messaging.Food
 		err   error
 	)
-
 	for scanner.Scan() {
+		bytes := scanner.Bytes()
 		switch format {
 		case RFC3164:
 			{
-				proto, err = ProcessRfc3164(scanner)
+
+				proto, err = ProcessRfc3164(&bytes)
 			}
 		case RFC5423:
 			{
@@ -120,6 +122,7 @@ func SendMessagesFromSocket(conn net.Conn, msgsChan chan messaging.Food, format 
 		}
 		if nil != err {
 			log.Error(err)
+			continue
 		} else {
 			msgsChan <- *proto
 		}
@@ -127,6 +130,10 @@ func SendMessagesFromSocket(conn net.Conn, msgsChan chan messaging.Food, format 
 		if timeout > 0 {
 			conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
 		}
+	}
+	err = scanner.Err()
+	if nil != err {
+		log.Error(err)
 	}
 	log.Debug("Closing connection")
 	conn.Close()
@@ -140,8 +147,8 @@ type ScannerText interface {
 }
 
 //Process rfc3164 message from bufio scanner and return a proto message
-func ProcessRfc3164(scanner ScannerText) (food *messaging.Food, err error) {
-	msg := rfc3164.NewParser([]byte(scanner.Text()))
+func ProcessRfc3164(bytes *[]byte) (food *messaging.Food, err error) {
+	msg := rfc3164.NewParser(*bytes)
 	msg.Parse()
 	food, err = RFC3164ToProto(msg.Dump())
 	return
