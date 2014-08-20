@@ -5,11 +5,14 @@ import (
 	"github.com/CapillarySoftware/goforward/messaging"
 	log "github.com/cihub/seelog"
 	nano "github.com/op/go-nanomsg"
+	"sync"
+	"time"
 )
 
 const ()
 
-func Run(channel <-chan messaging.Food) {
+func Run(channel <-chan messaging.Food, wg *sync.WaitGroup) {
+	defer wg.Done()
 	socket, err := nano.NewPushSocket()
 	if nil != err {
 		log.Error(err)
@@ -20,12 +23,9 @@ func Run(channel <-chan messaging.Food) {
 		log.Error(err)
 		return
 	}
+	socket.SetSendTimeout(1 * time.Minute)
 	for msg := range channel {
-		index := "document"
-		indexType := "all"
 		id := uuid.NewRandom().String()
-		msg.Index = &index
-		msg.IndexType = &indexType
 		msg.Id = &id
 		log.Trace(msg)
 		bytes, err := msg.Marshal()
@@ -33,7 +33,7 @@ func Run(channel <-chan messaging.Food) {
 			log.Error(err)
 			continue
 		}
-		_, err = socket.Send(bytes, nano.DontWait) //blocking
+		_, err = socket.Send(bytes, 0) //blocking until timeout hit
 		if nil != err {
 			log.Error(err)
 		}

@@ -11,6 +11,7 @@ import (
 	"github.com/CapillarySoftware/goforward/messaging"
 	log "github.com/cihub/seelog"
 	"net"
+	"sync"
 	"time"
 )
 
@@ -37,29 +38,38 @@ type SyslogService struct {
 	Port      string
 	ln        net.Listener
 	udpConn   *net.UDPConn
+	done      chan bool
+	wg        *sync.WaitGroup
+}
+
+func NewSyslogService(cType ConnectionType, format Format, port string) (serv SyslogService) {
+	done := make(chan bool, 1)
+	wg := sync.WaitGroup{}
+	serv = SyslogService{ConType: cType, RFCFormat: format, Port: port, done: done, wg: &wg}
+	return
 }
 
 //Bind to syslog socket
-func (s *SyslogService) Bind() (err error) {
-	switch s.ConType {
+func (this *SyslogService) Bind() (err error) {
+	switch this.ConType {
 	case TCP:
 		{
-			s.ln, err = net.Listen(string(s.ConType), ":"+s.Port)
+			this.ln, err = net.Listen(string(this.ConType), ":"+this.Port)
 		}
 	case UDP:
 		{
 			var (
 				udpAddr *net.UDPAddr
 			)
-			udpAddr, err = net.ResolveUDPAddr("udp", ":"+s.Port)
+			udpAddr, err = net.ResolveUDPAddr("udp", ":"+this.Port)
 			if err != nil {
 				return err
 			}
-			s.udpConn, err = net.ListenUDP(string(s.ConType), udpAddr)
+			this.udpConn, err = net.ListenUDP(string(this.ConType), udpAddr)
 		}
 	default:
 		{
-			log.Warn("Failed to provide valid connection type : ", s.ConType)
+			log.Warn("Failed to provide valid connection type : ", this.ConType)
 		}
 
 	}
@@ -70,66 +80,87 @@ func (s *SyslogService) Bind() (err error) {
 	return
 }
 
+func (this *SyslogService) Close() {
+	close(this.done)
+	this.wg.Wait()
+}
+
 //Get message from syslog socket
-func (s *SyslogService) SendMessages(msgsChan chan messaging.Food) (err error) {
-	switch s.ConType {
+func (this *SyslogService) SendMessages(msgsChan chan messaging.Food) (err error) {
+	switch this.ConType {
 	case TCP:
 		{
 			for {
 				var conn net.Conn
-				conn, err = s.ln.Accept()
+				conn, err = this.ln.Accept()
 				log.Trace("Accepted connection")
 				if err != nil {
 					return
 				}
-				go SendMessagesFromSocket(conn, msgsChan, s.RFCFormat, 240)
+				this.wg.Add(1)
+				go SendMessagesFromSocket(conn, msgsChan, this.RFCFormat, 240, this.done, this.wg)
 			}
 		}
 
 	case UDP:
 		{
-			go SendMessagesFromSocket(s.udpConn, msgsChan, s.RFCFormat, 0)
+			this.wg.Add(1)
+			go SendMessagesFromSocket(this.udpConn, msgsChan, this.RFCFormat, 0, this.done, this.wg)
 		}
 	}
 	return
 }
 
 //Scan and parse messages
-func SendMessagesFromSocket(conn net.Conn, msgsChan chan messaging.Food, format Format, timeout int) {
+func SendMessagesFromSocket(conn net.Conn, msgsChan chan messaging.Food, format Format, timeout int, done <-chan bool, wg *sync.WaitGroup) {
 	if timeout > 0 {
 		conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
 	}
+	defer wg.Done()
+	defer conn.Close()
 
 	scanner := bufio.NewScanner(conn)
 	var (
 		proto *messaging.Food
 		err   error
 	)
+main:
+	for {
+		select {
+		default:
+			if scanner.Scan() {
+				switch format {
+				case RFC3164:
+					{
+						proto, err = ProcessRfc3164(scanner)
+					}
+				case RFC5423:
+					{
+						errors.New("RFC5423 not implemented yet...")
 
-	for scanner.Scan() {
-		switch format {
-		case RFC3164:
-			{
-				proto, err = ProcessRfc3164(scanner)
+					}
+				}
+				if nil != err {
+					log.Error(err)
+				} else {
+					msgsChan <- *proto
+				}
+
+				if timeout > 0 {
+					conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
+				}
+			} else {
+				log.Info("Closing connection")
+				break main
 			}
-		case RFC5423:
-			{
-				errors.New("RFC5423 not implemented yet...")
-
+		case _, ok := <-done:
+			if !ok {
+				log.Debug("Closing connection because of shutdown")
+				break main
 			}
-		}
-		if nil != err {
-			log.Error(err)
-		} else {
-			msgsChan <- *proto
-		}
 
-		if timeout > 0 {
-			conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
 		}
 	}
-	log.Debug("Closing connection")
-	conn.Close()
 
 	return
 }
