@@ -158,6 +158,8 @@ main:
 			if !ok {
 				log.Debug("Closing connection because of shutdown")
 				break main
+			} else {
+				log.Trace("Unknown message")
 			}
 
 		}
