@@ -8,6 +8,7 @@ import (
 	. "github.com/jeromer/syslogparser"
 	"github.com/jeromer/syslogparser/rfc3164"
 	// 	"github.com/jeromer/syslogparser/rfc5424"
+	"code.google.com/p/go-uuid/uuid"
 	"github.com/CapillarySoftware/goforward/messaging"
 	log "github.com/cihub/seelog"
 	"net"
@@ -263,8 +264,12 @@ func RFC3164ToProto(lParts LogParts) (food *messaging.Food, err error) {
 			}
 		}
 	}
+	id := uuid.NewRandom().String()
+	proto.Id = &id
 	food = new(messaging.Food)
 	food.Type = &pType
+	ts := time.Now().UTC().UnixNano()
+	food.TimeNano = &ts
 	food.Rfc3164 = append(food.Rfc3164, proto)
 	// food.Rfc3164 = proto
 	return

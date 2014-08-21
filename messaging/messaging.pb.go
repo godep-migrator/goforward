@@ -17,31 +17,30 @@
 package messaging
 
 import proto "code.google.com/p/gogoprotobuf/proto"
-import json "encoding/json"
 import math "math"
 
 // discarding unused import gogoproto "code.google.com/p/gogoprotobuf/gogoproto/gogo.pb"
 
 import io "io"
+import fmt "fmt"
 import code_google_com_p_gogoprotobuf_proto "code.google.com/p/gogoprotobuf/proto"
 
-import fmt "fmt"
+import fmt1 "fmt"
 import strings "strings"
 import reflect "reflect"
 
-import fmt1 "fmt"
+import fmt2 "fmt"
 import strings1 "strings"
 import code_google_com_p_gogoprotobuf_proto1 "code.google.com/p/gogoprotobuf/proto"
 import sort "sort"
 import strconv "strconv"
 import reflect1 "reflect"
 
-import fmt2 "fmt"
+import fmt3 "fmt"
 import bytes "bytes"
 
-// Reference proto, json, and math imports to suppress error if they are not otherwise used.
+// Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
-var _ = &json.SyntaxError{}
 var _ = math.Inf
 
 type TYPES int32
@@ -88,6 +87,7 @@ type Rfc3164 struct {
 	Priority         *int32  `protobuf:"varint,5,opt,name=priority" json:"priority,omitempty"`
 	Facility         *int32  `protobuf:"varint,6,opt,name=facility" json:"facility,omitempty"`
 	Severity         *int32  `protobuf:"varint,7,opt,name=severity" json:"severity,omitempty"`
+	Id               *string `protobuf:"bytes,8,opt,name=id" json:"id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -143,6 +143,13 @@ func (m *Rfc3164) GetSeverity() int32 {
 	return 0
 }
 
+func (m *Rfc3164) GetId() string {
+	if m != nil && m.Id != nil {
+		return *m.Id
+	}
+	return ""
+}
+
 type Rfc5424 struct {
 	Priority         *int32  `protobuf:"varint,1,opt,name=priority" json:"priority,omitempty"`
 	Facility         *int32  `protobuf:"varint,2,opt,name=facility" json:"facility,omitempty"`
@@ -155,6 +162,7 @@ type Rfc5424 struct {
 	Msgid            *string `protobuf:"bytes,9,opt,name=msgid" json:"msgid,omitempty"`
 	Structureddata   *string `protobuf:"bytes,10,opt,name=structureddata" json:"structureddata,omitempty"`
 	Message          *string `protobuf:"bytes,11,opt,name=message" json:"message,omitempty"`
+	Id               *string `protobuf:"bytes,12,opt,name=id" json:"id,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
 
@@ -238,8 +246,15 @@ func (m *Rfc5424) GetMessage() string {
 	return ""
 }
 
+func (m *Rfc5424) GetId() string {
+	if m != nil && m.Id != nil {
+		return *m.Id
+	}
+	return ""
+}
+
 type Json struct {
-	Timestamp        *int64  `protobuf:"varint,1,opt,name=timestamp" json:"timestamp,omitempty"`
+	Id               *string `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
 	Json             *string `protobuf:"bytes,2,opt,name=json" json:"json,omitempty"`
 	XXX_unrecognized []byte  `json:"-"`
 }
@@ -247,11 +262,11 @@ type Json struct {
 func (m *Json) Reset()      { *m = Json{} }
 func (*Json) ProtoMessage() {}
 
-func (m *Json) GetTimestamp() int64 {
-	if m != nil && m.Timestamp != nil {
-		return *m.Timestamp
+func (m *Json) GetId() string {
+	if m != nil && m.Id != nil {
+		return *m.Id
 	}
-	return 0
+	return ""
 }
 
 func (m *Json) GetJson() string {
@@ -268,7 +283,7 @@ type Food struct {
 	Json             []*Json    `protobuf:"bytes,4,rep,name=json" json:"json,omitempty"`
 	Index            *string    `protobuf:"bytes,5,opt,name=index" json:"index,omitempty"`
 	IndexType        *string    `protobuf:"bytes,6,opt,name=indexType" json:"indexType,omitempty"`
-	Id               *string    `protobuf:"bytes,7,opt,name=id" json:"id,omitempty"`
+	TimeNano         *int64     `protobuf:"varint,7,opt,name=timeNano" json:"timeNano,omitempty"`
 	XXX_unrecognized []byte     `json:"-"`
 }
 
@@ -317,11 +332,11 @@ func (m *Food) GetIndexType() string {
 	return ""
 }
 
-func (m *Food) GetId() string {
-	if m != nil && m.Id != nil {
-		return *m.Id
+func (m *Food) GetTimeNano() int64 {
+	if m != nil && m.TimeNano != nil {
+		return *m.TimeNano
 	}
-	return ""
+	return 0
 }
 
 func init() {
@@ -348,7 +363,7 @@ func (m *Rfc3164) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
 			}
 			var v int64
 			for shift := uint(0); ; shift += 7 {
@@ -365,7 +380,7 @@ func (m *Rfc3164) Unmarshal(data []byte) error {
 			m.Timestamp = &v
 		case 2:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Hostname", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -388,7 +403,7 @@ func (m *Rfc3164) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Tag", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -411,7 +426,7 @@ func (m *Rfc3164) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Content", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -434,7 +449,7 @@ func (m *Rfc3164) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Priority", wireType)
 			}
 			var v int32
 			for shift := uint(0); ; shift += 7 {
@@ -451,7 +466,7 @@ func (m *Rfc3164) Unmarshal(data []byte) error {
 			m.Priority = &v
 		case 6:
 			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Facility", wireType)
 			}
 			var v int32
 			for shift := uint(0); ; shift += 7 {
@@ -468,7 +483,7 @@ func (m *Rfc3164) Unmarshal(data []byte) error {
 			m.Facility = &v
 		case 7:
 			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Severity", wireType)
 			}
 			var v int32
 			for shift := uint(0); ; shift += 7 {
@@ -483,6 +498,29 @@ func (m *Rfc3164) Unmarshal(data []byte) error {
 				}
 			}
 			m.Severity = &v
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + int(stringLen)
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[index:postIndex])
+			m.Id = &s
+			index = postIndex
 		default:
 			var sizeOfWire int
 			for {
@@ -527,7 +565,7 @@ func (m *Rfc5424) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Priority", wireType)
 			}
 			var v int32
 			for shift := uint(0); ; shift += 7 {
@@ -544,7 +582,7 @@ func (m *Rfc5424) Unmarshal(data []byte) error {
 			m.Priority = &v
 		case 2:
 			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Facility", wireType)
 			}
 			var v int32
 			for shift := uint(0); ; shift += 7 {
@@ -561,7 +599,7 @@ func (m *Rfc5424) Unmarshal(data []byte) error {
 			m.Facility = &v
 		case 3:
 			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Severity", wireType)
 			}
 			var v int32
 			for shift := uint(0); ; shift += 7 {
@@ -578,7 +616,7 @@ func (m *Rfc5424) Unmarshal(data []byte) error {
 			m.Severity = &v
 		case 4:
 			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Version", wireType)
 			}
 			var v int32
 			for shift := uint(0); ; shift += 7 {
@@ -595,7 +633,7 @@ func (m *Rfc5424) Unmarshal(data []byte) error {
 			m.Version = &v
 		case 5:
 			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Timestamp", wireType)
 			}
 			var v int64
 			for shift := uint(0); ; shift += 7 {
@@ -612,7 +650,7 @@ func (m *Rfc5424) Unmarshal(data []byte) error {
 			m.Timestamp = &v
 		case 6:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Hostname", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -635,7 +673,7 @@ func (m *Rfc5424) Unmarshal(data []byte) error {
 			index = postIndex
 		case 7:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Appname", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -658,7 +696,7 @@ func (m *Rfc5424) Unmarshal(data []byte) error {
 			index = postIndex
 		case 8:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Procid", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -681,7 +719,7 @@ func (m *Rfc5424) Unmarshal(data []byte) error {
 			index = postIndex
 		case 9:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Msgid", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -704,7 +742,7 @@ func (m *Rfc5424) Unmarshal(data []byte) error {
 			index = postIndex
 		case 10:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Structureddata", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -727,7 +765,7 @@ func (m *Rfc5424) Unmarshal(data []byte) error {
 			index = postIndex
 		case 11:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Message", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -747,6 +785,29 @@ func (m *Rfc5424) Unmarshal(data []byte) error {
 			}
 			s := string(data[index:postIndex])
 			m.Message = &s
+			index = postIndex
+		case 12:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if index >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[index]
+				index++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			postIndex := index + int(stringLen)
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[index:postIndex])
+			m.Id = &s
 			index = postIndex
 		default:
 			var sizeOfWire int
@@ -791,25 +852,31 @@ func (m *Json) Unmarshal(data []byte) error {
 		wireType := int(wire & 0x7)
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			var v int64
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if index >= l {
 					return io.ErrUnexpectedEOF
 				}
 				b := data[index]
 				index++
-				v |= (int64(b) & 0x7F) << shift
+				stringLen |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			m.Timestamp = &v
+			postIndex := index + int(stringLen)
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[index:postIndex])
+			m.Id = &s
+			index = postIndex
 		case 2:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Json", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -874,7 +941,7 @@ func (m *Food) Unmarshal(data []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
 			var v TYPES
 			for shift := uint(0); ; shift += 7 {
@@ -891,7 +958,7 @@ func (m *Food) Unmarshal(data []byte) error {
 			m.Type = &v
 		case 2:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Rfc3164", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -914,7 +981,7 @@ func (m *Food) Unmarshal(data []byte) error {
 			index = postIndex
 		case 3:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Rfc5424", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -937,7 +1004,7 @@ func (m *Food) Unmarshal(data []byte) error {
 			index = postIndex
 		case 4:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Json", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -960,7 +1027,7 @@ func (m *Food) Unmarshal(data []byte) error {
 			index = postIndex
 		case 5:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -983,7 +1050,7 @@ func (m *Food) Unmarshal(data []byte) error {
 			index = postIndex
 		case 6:
 			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+				return fmt.Errorf("proto: wrong wireType = %d for field IndexType", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1005,28 +1072,22 @@ func (m *Food) Unmarshal(data []byte) error {
 			m.IndexType = &s
 			index = postIndex
 		case 7:
-			if wireType != 2 {
-				return code_google_com_p_gogoprotobuf_proto.ErrWrongType
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TimeNano", wireType)
 			}
-			var stringLen uint64
+			var v int64
 			for shift := uint(0); ; shift += 7 {
 				if index >= l {
 					return io.ErrUnexpectedEOF
 				}
 				b := data[index]
 				index++
-				stringLen |= (uint64(b) & 0x7F) << shift
+				v |= (int64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			postIndex := index + int(stringLen)
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			s := string(data[index:postIndex])
-			m.Id = &s
-			index = postIndex
+			m.TimeNano = &v
 		default:
 			var sizeOfWire int
 			for {
@@ -1062,7 +1123,8 @@ func (this *Rfc3164) String() string {
 		`Priority:` + valueToStringMessaging(this.Priority) + `,`,
 		`Facility:` + valueToStringMessaging(this.Facility) + `,`,
 		`Severity:` + valueToStringMessaging(this.Severity) + `,`,
-		`XXX_unrecognized:` + fmt.Sprintf("%v", this.XXX_unrecognized) + `,`,
+		`Id:` + valueToStringMessaging(this.Id) + `,`,
+		`XXX_unrecognized:` + fmt1.Sprintf("%v", this.XXX_unrecognized) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1083,7 +1145,8 @@ func (this *Rfc5424) String() string {
 		`Msgid:` + valueToStringMessaging(this.Msgid) + `,`,
 		`Structureddata:` + valueToStringMessaging(this.Structureddata) + `,`,
 		`Message:` + valueToStringMessaging(this.Message) + `,`,
-		`XXX_unrecognized:` + fmt.Sprintf("%v", this.XXX_unrecognized) + `,`,
+		`Id:` + valueToStringMessaging(this.Id) + `,`,
+		`XXX_unrecognized:` + fmt1.Sprintf("%v", this.XXX_unrecognized) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1093,9 +1156,9 @@ func (this *Json) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&Json{`,
-		`Timestamp:` + valueToStringMessaging(this.Timestamp) + `,`,
+		`Id:` + valueToStringMessaging(this.Id) + `,`,
 		`Json:` + valueToStringMessaging(this.Json) + `,`,
-		`XXX_unrecognized:` + fmt.Sprintf("%v", this.XXX_unrecognized) + `,`,
+		`XXX_unrecognized:` + fmt1.Sprintf("%v", this.XXX_unrecognized) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1106,13 +1169,13 @@ func (this *Food) String() string {
 	}
 	s := strings.Join([]string{`&Food{`,
 		`Type:` + valueToStringMessaging(this.Type) + `,`,
-		`Rfc3164:` + strings.Replace(fmt.Sprintf("%v", this.Rfc3164), "Rfc3164", "Rfc3164", 1) + `,`,
-		`Rfc5424:` + strings.Replace(fmt.Sprintf("%v", this.Rfc5424), "Rfc5424", "Rfc5424", 1) + `,`,
-		`Json:` + strings.Replace(fmt.Sprintf("%v", this.Json), "Json", "Json", 1) + `,`,
+		`Rfc3164:` + strings.Replace(fmt1.Sprintf("%v", this.Rfc3164), "Rfc3164", "Rfc3164", 1) + `,`,
+		`Rfc5424:` + strings.Replace(fmt1.Sprintf("%v", this.Rfc5424), "Rfc5424", "Rfc5424", 1) + `,`,
+		`Json:` + strings.Replace(fmt1.Sprintf("%v", this.Json), "Json", "Json", 1) + `,`,
 		`Index:` + valueToStringMessaging(this.Index) + `,`,
 		`IndexType:` + valueToStringMessaging(this.IndexType) + `,`,
-		`Id:` + valueToStringMessaging(this.Id) + `,`,
-		`XXX_unrecognized:` + fmt.Sprintf("%v", this.XXX_unrecognized) + `,`,
+		`TimeNano:` + valueToStringMessaging(this.TimeNano) + `,`,
+		`XXX_unrecognized:` + fmt1.Sprintf("%v", this.XXX_unrecognized) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1123,7 +1186,7 @@ func valueToStringMessaging(v interface{}) string {
 		return "nil"
 	}
 	pv := reflect.Indirect(rv).Interface()
-	return fmt.Sprintf("*%v", pv)
+	return fmt1.Sprintf("*%v", pv)
 }
 func (m *Rfc3164) Size() (n int) {
 	var l int
@@ -1151,6 +1214,10 @@ func (m *Rfc3164) Size() (n int) {
 	}
 	if m.Severity != nil {
 		n += 1 + sovMessaging(uint64(uint32(*m.Severity)))
+	}
+	if m.Id != nil {
+		l = len(*m.Id)
+		n += 1 + l + sovMessaging(uint64(l))
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -1199,6 +1266,10 @@ func (m *Rfc5424) Size() (n int) {
 		l = len(*m.Message)
 		n += 1 + l + sovMessaging(uint64(l))
 	}
+	if m.Id != nil {
+		l = len(*m.Id)
+		n += 1 + l + sovMessaging(uint64(l))
+	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
 	}
@@ -1207,8 +1278,9 @@ func (m *Rfc5424) Size() (n int) {
 func (m *Json) Size() (n int) {
 	var l int
 	_ = l
-	if m.Timestamp != nil {
-		n += 1 + sovMessaging(uint64(*m.Timestamp))
+	if m.Id != nil {
+		l = len(*m.Id)
+		n += 1 + l + sovMessaging(uint64(l))
 	}
 	if m.Json != nil {
 		l = len(*m.Json)
@@ -1251,9 +1323,8 @@ func (m *Food) Size() (n int) {
 		l = len(*m.IndexType)
 		n += 1 + l + sovMessaging(uint64(l))
 	}
-	if m.Id != nil {
-		l = len(*m.Id)
-		n += 1 + l + sovMessaging(uint64(l))
+	if m.TimeNano != nil {
+		n += 1 + sovMessaging(uint64(*m.TimeNano))
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -1316,8 +1387,12 @@ func NewPopulatedRfc3164(r randyMessaging, easy bool) *Rfc3164 {
 		}
 		this.Severity = &v7
 	}
+	if r.Intn(10) != 0 {
+		v8 := randStringMessaging(r)
+		this.Id = &v8
+	}
 	if !easy && r.Intn(10) != 0 {
-		this.XXX_unrecognized = randUnrecognizedMessaging(r, 8)
+		this.XXX_unrecognized = randUnrecognizedMessaging(r, 9)
 	}
 	return this
 }
@@ -1325,66 +1400,70 @@ func NewPopulatedRfc3164(r randyMessaging, easy bool) *Rfc3164 {
 func NewPopulatedRfc5424(r randyMessaging, easy bool) *Rfc5424 {
 	this := &Rfc5424{}
 	if r.Intn(10) != 0 {
-		v8 := r.Int31()
-		if r.Intn(2) == 0 {
-			v8 *= -1
-		}
-		this.Priority = &v8
-	}
-	if r.Intn(10) != 0 {
 		v9 := r.Int31()
 		if r.Intn(2) == 0 {
 			v9 *= -1
 		}
-		this.Facility = &v9
+		this.Priority = &v9
 	}
 	if r.Intn(10) != 0 {
 		v10 := r.Int31()
 		if r.Intn(2) == 0 {
 			v10 *= -1
 		}
-		this.Severity = &v10
+		this.Facility = &v10
 	}
 	if r.Intn(10) != 0 {
 		v11 := r.Int31()
 		if r.Intn(2) == 0 {
 			v11 *= -1
 		}
-		this.Version = &v11
+		this.Severity = &v11
 	}
 	if r.Intn(10) != 0 {
-		v12 := r.Int63()
+		v12 := r.Int31()
 		if r.Intn(2) == 0 {
 			v12 *= -1
 		}
-		this.Timestamp = &v12
+		this.Version = &v12
 	}
 	if r.Intn(10) != 0 {
-		v13 := randStringMessaging(r)
-		this.Hostname = &v13
+		v13 := r.Int63()
+		if r.Intn(2) == 0 {
+			v13 *= -1
+		}
+		this.Timestamp = &v13
 	}
 	if r.Intn(10) != 0 {
 		v14 := randStringMessaging(r)
-		this.Appname = &v14
+		this.Hostname = &v14
 	}
 	if r.Intn(10) != 0 {
 		v15 := randStringMessaging(r)
-		this.Procid = &v15
+		this.Appname = &v15
 	}
 	if r.Intn(10) != 0 {
 		v16 := randStringMessaging(r)
-		this.Msgid = &v16
+		this.Procid = &v16
 	}
 	if r.Intn(10) != 0 {
 		v17 := randStringMessaging(r)
-		this.Structureddata = &v17
+		this.Msgid = &v17
 	}
 	if r.Intn(10) != 0 {
 		v18 := randStringMessaging(r)
-		this.Message = &v18
+		this.Structureddata = &v18
+	}
+	if r.Intn(10) != 0 {
+		v19 := randStringMessaging(r)
+		this.Message = &v19
+	}
+	if r.Intn(10) != 0 {
+		v20 := randStringMessaging(r)
+		this.Id = &v20
 	}
 	if !easy && r.Intn(10) != 0 {
-		this.XXX_unrecognized = randUnrecognizedMessaging(r, 12)
+		this.XXX_unrecognized = randUnrecognizedMessaging(r, 13)
 	}
 	return this
 }
@@ -1392,15 +1471,12 @@ func NewPopulatedRfc5424(r randyMessaging, easy bool) *Rfc5424 {
 func NewPopulatedJson(r randyMessaging, easy bool) *Json {
 	this := &Json{}
 	if r.Intn(10) != 0 {
-		v19 := r.Int63()
-		if r.Intn(2) == 0 {
-			v19 *= -1
-		}
-		this.Timestamp = &v19
+		v21 := randStringMessaging(r)
+		this.Id = &v21
 	}
 	if r.Intn(10) != 0 {
-		v20 := randStringMessaging(r)
-		this.Json = &v20
+		v22 := randStringMessaging(r)
+		this.Json = &v22
 	}
 	if !easy && r.Intn(10) != 0 {
 		this.XXX_unrecognized = randUnrecognizedMessaging(r, 3)
@@ -1410,40 +1486,43 @@ func NewPopulatedJson(r randyMessaging, easy bool) *Json {
 
 func NewPopulatedFood(r randyMessaging, easy bool) *Food {
 	this := &Food{}
-	v21 := TYPES([]int32{0, 1, 2}[r.Intn(3)])
-	this.Type = &v21
+	v23 := TYPES([]int32{0, 1, 2}[r.Intn(3)])
+	this.Type = &v23
 	if r.Intn(10) != 0 {
-		v22 := r.Intn(10)
-		this.Rfc3164 = make([]*Rfc3164, v22)
-		for i := 0; i < v22; i++ {
+		v24 := r.Intn(10)
+		this.Rfc3164 = make([]*Rfc3164, v24)
+		for i := 0; i < v24; i++ {
 			this.Rfc3164[i] = NewPopulatedRfc3164(r, easy)
 		}
 	}
 	if r.Intn(10) != 0 {
-		v23 := r.Intn(10)
-		this.Rfc5424 = make([]*Rfc5424, v23)
-		for i := 0; i < v23; i++ {
+		v25 := r.Intn(10)
+		this.Rfc5424 = make([]*Rfc5424, v25)
+		for i := 0; i < v25; i++ {
 			this.Rfc5424[i] = NewPopulatedRfc5424(r, easy)
 		}
 	}
 	if r.Intn(10) != 0 {
-		v24 := r.Intn(10)
-		this.Json = make([]*Json, v24)
-		for i := 0; i < v24; i++ {
+		v26 := r.Intn(10)
+		this.Json = make([]*Json, v26)
+		for i := 0; i < v26; i++ {
 			this.Json[i] = NewPopulatedJson(r, easy)
 		}
 	}
 	if r.Intn(10) != 0 {
-		v25 := randStringMessaging(r)
-		this.Index = &v25
-	}
-	if r.Intn(10) != 0 {
-		v26 := randStringMessaging(r)
-		this.IndexType = &v26
-	}
-	if r.Intn(10) != 0 {
 		v27 := randStringMessaging(r)
-		this.Id = &v27
+		this.Index = &v27
+	}
+	if r.Intn(10) != 0 {
+		v28 := randStringMessaging(r)
+		this.IndexType = &v28
+	}
+	if r.Intn(10) != 0 {
+		v29 := r.Int63()
+		if r.Intn(2) == 0 {
+			v29 *= -1
+		}
+		this.TimeNano = &v29
 	}
 	if !easy && r.Intn(10) != 0 {
 		this.XXX_unrecognized = randUnrecognizedMessaging(r, 8)
@@ -1468,9 +1547,9 @@ func randUTF8RuneMessaging(r randyMessaging) rune {
 	return res
 }
 func randStringMessaging(r randyMessaging) string {
-	v28 := r.Intn(100)
-	tmps := make([]rune, v28)
-	for i := 0; i < v28; i++ {
+	v30 := r.Intn(100)
+	tmps := make([]rune, v30)
+	for i := 0; i < v30; i++ {
 		tmps[i] = randUTF8RuneMessaging(r)
 	}
 	return string(tmps)
@@ -1492,11 +1571,11 @@ func randFieldMessaging(data []byte, r randyMessaging, fieldNumber int, wire int
 	switch wire {
 	case 0:
 		data = encodeVarintPopulateMessaging(data, uint64(key))
-		v29 := r.Int63()
+		v31 := r.Int63()
 		if r.Intn(2) == 0 {
-			v29 *= -1
+			v31 *= -1
 		}
-		data = encodeVarintPopulateMessaging(data, uint64(v29))
+		data = encodeVarintPopulateMessaging(data, uint64(v31))
 	case 1:
 		data = encodeVarintPopulateMessaging(data, uint64(key))
 		data = append(data, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -1573,6 +1652,12 @@ func (m *Rfc3164) MarshalTo(data []byte) (n int, err error) {
 		data[i] = 0x38
 		i++
 		i = encodeVarintMessaging(data, i, uint64(uint32(*m.Severity)))
+	}
+	if m.Id != nil {
+		data[i] = 0x42
+		i++
+		i = encodeVarintMessaging(data, i, uint64(len(*m.Id)))
+		i += copy(data[i:], *m.Id)
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
@@ -1655,6 +1740,12 @@ func (m *Rfc5424) MarshalTo(data []byte) (n int, err error) {
 		i = encodeVarintMessaging(data, i, uint64(len(*m.Message)))
 		i += copy(data[i:], *m.Message)
 	}
+	if m.Id != nil {
+		data[i] = 0x62
+		i++
+		i = encodeVarintMessaging(data, i, uint64(len(*m.Id)))
+		i += copy(data[i:], *m.Id)
+	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
 	}
@@ -1675,10 +1766,11 @@ func (m *Json) MarshalTo(data []byte) (n int, err error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Timestamp != nil {
-		data[i] = 0x8
+	if m.Id != nil {
+		data[i] = 0xa
 		i++
-		i = encodeVarintMessaging(data, i, uint64(*m.Timestamp))
+		i = encodeVarintMessaging(data, i, uint64(len(*m.Id)))
+		i += copy(data[i:], *m.Id)
 	}
 	if m.Json != nil {
 		data[i] = 0x12
@@ -1759,11 +1851,10 @@ func (m *Food) MarshalTo(data []byte) (n int, err error) {
 		i = encodeVarintMessaging(data, i, uint64(len(*m.IndexType)))
 		i += copy(data[i:], *m.IndexType)
 	}
-	if m.Id != nil {
-		data[i] = 0x3a
+	if m.TimeNano != nil {
+		data[i] = 0x38
 		i++
-		i = encodeVarintMessaging(data, i, uint64(len(*m.Id)))
-		i += copy(data[i:], *m.Id)
+		i = encodeVarintMessaging(data, i, uint64(*m.TimeNano))
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
@@ -1801,28 +1892,28 @@ func (this *Rfc3164) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings1.Join([]string{`&messaging.Rfc3164{` + `Timestamp:` + valueToGoStringMessaging(this.Timestamp, "int64"), `Hostname:` + valueToGoStringMessaging(this.Hostname, "string"), `Tag:` + valueToGoStringMessaging(this.Tag, "string"), `Content:` + valueToGoStringMessaging(this.Content, "string"), `Priority:` + valueToGoStringMessaging(this.Priority, "int32"), `Facility:` + valueToGoStringMessaging(this.Facility, "int32"), `Severity:` + valueToGoStringMessaging(this.Severity, "int32"), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
+	s := strings1.Join([]string{`&messaging.Rfc3164{` + `Timestamp:` + valueToGoStringMessaging(this.Timestamp, "int64"), `Hostname:` + valueToGoStringMessaging(this.Hostname, "string"), `Tag:` + valueToGoStringMessaging(this.Tag, "string"), `Content:` + valueToGoStringMessaging(this.Content, "string"), `Priority:` + valueToGoStringMessaging(this.Priority, "int32"), `Facility:` + valueToGoStringMessaging(this.Facility, "int32"), `Severity:` + valueToGoStringMessaging(this.Severity, "int32"), `Id:` + valueToGoStringMessaging(this.Id, "string"), `XXX_unrecognized:` + fmt2.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
 	return s
 }
 func (this *Rfc5424) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings1.Join([]string{`&messaging.Rfc5424{` + `Priority:` + valueToGoStringMessaging(this.Priority, "int32"), `Facility:` + valueToGoStringMessaging(this.Facility, "int32"), `Severity:` + valueToGoStringMessaging(this.Severity, "int32"), `Version:` + valueToGoStringMessaging(this.Version, "int32"), `Timestamp:` + valueToGoStringMessaging(this.Timestamp, "int64"), `Hostname:` + valueToGoStringMessaging(this.Hostname, "string"), `Appname:` + valueToGoStringMessaging(this.Appname, "string"), `Procid:` + valueToGoStringMessaging(this.Procid, "string"), `Msgid:` + valueToGoStringMessaging(this.Msgid, "string"), `Structureddata:` + valueToGoStringMessaging(this.Structureddata, "string"), `Message:` + valueToGoStringMessaging(this.Message, "string"), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
+	s := strings1.Join([]string{`&messaging.Rfc5424{` + `Priority:` + valueToGoStringMessaging(this.Priority, "int32"), `Facility:` + valueToGoStringMessaging(this.Facility, "int32"), `Severity:` + valueToGoStringMessaging(this.Severity, "int32"), `Version:` + valueToGoStringMessaging(this.Version, "int32"), `Timestamp:` + valueToGoStringMessaging(this.Timestamp, "int64"), `Hostname:` + valueToGoStringMessaging(this.Hostname, "string"), `Appname:` + valueToGoStringMessaging(this.Appname, "string"), `Procid:` + valueToGoStringMessaging(this.Procid, "string"), `Msgid:` + valueToGoStringMessaging(this.Msgid, "string"), `Structureddata:` + valueToGoStringMessaging(this.Structureddata, "string"), `Message:` + valueToGoStringMessaging(this.Message, "string"), `Id:` + valueToGoStringMessaging(this.Id, "string"), `XXX_unrecognized:` + fmt2.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
 	return s
 }
 func (this *Json) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings1.Join([]string{`&messaging.Json{` + `Timestamp:` + valueToGoStringMessaging(this.Timestamp, "int64"), `Json:` + valueToGoStringMessaging(this.Json, "string"), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
+	s := strings1.Join([]string{`&messaging.Json{` + `Id:` + valueToGoStringMessaging(this.Id, "string"), `Json:` + valueToGoStringMessaging(this.Json, "string"), `XXX_unrecognized:` + fmt2.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
 	return s
 }
 func (this *Food) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings1.Join([]string{`&messaging.Food{` + `Type:` + valueToGoStringMessaging(this.Type, "messaging.TYPES"), `Rfc3164:` + fmt1.Sprintf("%#v", this.Rfc3164), `Rfc5424:` + fmt1.Sprintf("%#v", this.Rfc5424), `Json:` + fmt1.Sprintf("%#v", this.Json), `Index:` + valueToGoStringMessaging(this.Index, "string"), `IndexType:` + valueToGoStringMessaging(this.IndexType, "string"), `Id:` + valueToGoStringMessaging(this.Id, "string"), `XXX_unrecognized:` + fmt1.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
+	s := strings1.Join([]string{`&messaging.Food{` + `Type:` + valueToGoStringMessaging(this.Type, "messaging.TYPES"), `Rfc3164:` + fmt2.Sprintf("%#v", this.Rfc3164), `Rfc5424:` + fmt2.Sprintf("%#v", this.Rfc5424), `Json:` + fmt2.Sprintf("%#v", this.Json), `Index:` + valueToGoStringMessaging(this.Index, "string"), `IndexType:` + valueToGoStringMessaging(this.IndexType, "string"), `TimeNano:` + valueToGoStringMessaging(this.TimeNano, "int64"), `XXX_unrecognized:` + fmt2.Sprintf("%#v", this.XXX_unrecognized) + `}`}, ", ")
 	return s
 }
 func valueToGoStringMessaging(v interface{}, typ string) string {
@@ -1831,7 +1922,7 @@ func valueToGoStringMessaging(v interface{}, typ string) string {
 		return "nil"
 	}
 	pv := reflect1.Indirect(rv).Interface()
-	return fmt1.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
+	return fmt2.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
 }
 func extensionToGoStringMessaging(e map[int32]code_google_com_p_gogoprotobuf_proto1.Extension) string {
 	if e == nil {
@@ -1855,86 +1946,95 @@ func (this *Rfc3164) VerboseEqual(that interface{}) error {
 		if this == nil {
 			return nil
 		}
-		return fmt2.Errorf("that == nil && this != nil")
+		return fmt3.Errorf("that == nil && this != nil")
 	}
 
 	that1, ok := that.(*Rfc3164)
 	if !ok {
-		return fmt2.Errorf("that is not of type *Rfc3164")
+		return fmt3.Errorf("that is not of type *Rfc3164")
 	}
 	if that1 == nil {
 		if this == nil {
 			return nil
 		}
-		return fmt2.Errorf("that is type *Rfc3164 but is nil && this != nil")
+		return fmt3.Errorf("that is type *Rfc3164 but is nil && this != nil")
 	} else if this == nil {
-		return fmt2.Errorf("that is type *Rfc3164but is not nil && this == nil")
+		return fmt3.Errorf("that is type *Rfc3164but is not nil && this == nil")
 	}
 	if this.Timestamp != nil && that1.Timestamp != nil {
 		if *this.Timestamp != *that1.Timestamp {
-			return fmt2.Errorf("Timestamp this(%v) Not Equal that(%v)", *this.Timestamp, *that1.Timestamp)
+			return fmt3.Errorf("Timestamp this(%v) Not Equal that(%v)", *this.Timestamp, *that1.Timestamp)
 		}
 	} else if this.Timestamp != nil {
-		return fmt2.Errorf("this.Timestamp == nil && that.Timestamp != nil")
+		return fmt3.Errorf("this.Timestamp == nil && that.Timestamp != nil")
 	} else if that1.Timestamp != nil {
-		return fmt2.Errorf("Timestamp this(%v) Not Equal that(%v)", this.Timestamp, that1.Timestamp)
+		return fmt3.Errorf("Timestamp this(%v) Not Equal that(%v)", this.Timestamp, that1.Timestamp)
 	}
 	if this.Hostname != nil && that1.Hostname != nil {
 		if *this.Hostname != *that1.Hostname {
-			return fmt2.Errorf("Hostname this(%v) Not Equal that(%v)", *this.Hostname, *that1.Hostname)
+			return fmt3.Errorf("Hostname this(%v) Not Equal that(%v)", *this.Hostname, *that1.Hostname)
 		}
 	} else if this.Hostname != nil {
-		return fmt2.Errorf("this.Hostname == nil && that.Hostname != nil")
+		return fmt3.Errorf("this.Hostname == nil && that.Hostname != nil")
 	} else if that1.Hostname != nil {
-		return fmt2.Errorf("Hostname this(%v) Not Equal that(%v)", this.Hostname, that1.Hostname)
+		return fmt3.Errorf("Hostname this(%v) Not Equal that(%v)", this.Hostname, that1.Hostname)
 	}
 	if this.Tag != nil && that1.Tag != nil {
 		if *this.Tag != *that1.Tag {
-			return fmt2.Errorf("Tag this(%v) Not Equal that(%v)", *this.Tag, *that1.Tag)
+			return fmt3.Errorf("Tag this(%v) Not Equal that(%v)", *this.Tag, *that1.Tag)
 		}
 	} else if this.Tag != nil {
-		return fmt2.Errorf("this.Tag == nil && that.Tag != nil")
+		return fmt3.Errorf("this.Tag == nil && that.Tag != nil")
 	} else if that1.Tag != nil {
-		return fmt2.Errorf("Tag this(%v) Not Equal that(%v)", this.Tag, that1.Tag)
+		return fmt3.Errorf("Tag this(%v) Not Equal that(%v)", this.Tag, that1.Tag)
 	}
 	if this.Content != nil && that1.Content != nil {
 		if *this.Content != *that1.Content {
-			return fmt2.Errorf("Content this(%v) Not Equal that(%v)", *this.Content, *that1.Content)
+			return fmt3.Errorf("Content this(%v) Not Equal that(%v)", *this.Content, *that1.Content)
 		}
 	} else if this.Content != nil {
-		return fmt2.Errorf("this.Content == nil && that.Content != nil")
+		return fmt3.Errorf("this.Content == nil && that.Content != nil")
 	} else if that1.Content != nil {
-		return fmt2.Errorf("Content this(%v) Not Equal that(%v)", this.Content, that1.Content)
+		return fmt3.Errorf("Content this(%v) Not Equal that(%v)", this.Content, that1.Content)
 	}
 	if this.Priority != nil && that1.Priority != nil {
 		if *this.Priority != *that1.Priority {
-			return fmt2.Errorf("Priority this(%v) Not Equal that(%v)", *this.Priority, *that1.Priority)
+			return fmt3.Errorf("Priority this(%v) Not Equal that(%v)", *this.Priority, *that1.Priority)
 		}
 	} else if this.Priority != nil {
-		return fmt2.Errorf("this.Priority == nil && that.Priority != nil")
+		return fmt3.Errorf("this.Priority == nil && that.Priority != nil")
 	} else if that1.Priority != nil {
-		return fmt2.Errorf("Priority this(%v) Not Equal that(%v)", this.Priority, that1.Priority)
+		return fmt3.Errorf("Priority this(%v) Not Equal that(%v)", this.Priority, that1.Priority)
 	}
 	if this.Facility != nil && that1.Facility != nil {
 		if *this.Facility != *that1.Facility {
-			return fmt2.Errorf("Facility this(%v) Not Equal that(%v)", *this.Facility, *that1.Facility)
+			return fmt3.Errorf("Facility this(%v) Not Equal that(%v)", *this.Facility, *that1.Facility)
 		}
 	} else if this.Facility != nil {
-		return fmt2.Errorf("this.Facility == nil && that.Facility != nil")
+		return fmt3.Errorf("this.Facility == nil && that.Facility != nil")
 	} else if that1.Facility != nil {
-		return fmt2.Errorf("Facility this(%v) Not Equal that(%v)", this.Facility, that1.Facility)
+		return fmt3.Errorf("Facility this(%v) Not Equal that(%v)", this.Facility, that1.Facility)
 	}
 	if this.Severity != nil && that1.Severity != nil {
 		if *this.Severity != *that1.Severity {
-			return fmt2.Errorf("Severity this(%v) Not Equal that(%v)", *this.Severity, *that1.Severity)
+			return fmt3.Errorf("Severity this(%v) Not Equal that(%v)", *this.Severity, *that1.Severity)
 		}
 	} else if this.Severity != nil {
-		return fmt2.Errorf("this.Severity == nil && that.Severity != nil")
+		return fmt3.Errorf("this.Severity == nil && that.Severity != nil")
 	} else if that1.Severity != nil {
-		return fmt2.Errorf("Severity this(%v) Not Equal that(%v)", this.Severity, that1.Severity)
+		return fmt3.Errorf("Severity this(%v) Not Equal that(%v)", this.Severity, that1.Severity)
+	}
+	if this.Id != nil && that1.Id != nil {
+		if *this.Id != *that1.Id {
+			return fmt3.Errorf("Id this(%v) Not Equal that(%v)", *this.Id, *that1.Id)
+		}
+	} else if this.Id != nil {
+		return fmt3.Errorf("this.Id == nil && that.Id != nil")
+	} else if that1.Id != nil {
+		return fmt3.Errorf("Id this(%v) Not Equal that(%v)", this.Id, that1.Id)
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
-		return fmt2.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
+		return fmt3.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
 	}
 	return nil
 }
@@ -2021,6 +2121,15 @@ func (this *Rfc3164) Equal(that interface{}) bool {
 	} else if that1.Severity != nil {
 		return false
 	}
+	if this.Id != nil && that1.Id != nil {
+		if *this.Id != *that1.Id {
+			return false
+		}
+	} else if this.Id != nil {
+		return false
+	} else if that1.Id != nil {
+		return false
+	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return false
 	}
@@ -2031,122 +2140,131 @@ func (this *Rfc5424) VerboseEqual(that interface{}) error {
 		if this == nil {
 			return nil
 		}
-		return fmt2.Errorf("that == nil && this != nil")
+		return fmt3.Errorf("that == nil && this != nil")
 	}
 
 	that1, ok := that.(*Rfc5424)
 	if !ok {
-		return fmt2.Errorf("that is not of type *Rfc5424")
+		return fmt3.Errorf("that is not of type *Rfc5424")
 	}
 	if that1 == nil {
 		if this == nil {
 			return nil
 		}
-		return fmt2.Errorf("that is type *Rfc5424 but is nil && this != nil")
+		return fmt3.Errorf("that is type *Rfc5424 but is nil && this != nil")
 	} else if this == nil {
-		return fmt2.Errorf("that is type *Rfc5424but is not nil && this == nil")
+		return fmt3.Errorf("that is type *Rfc5424but is not nil && this == nil")
 	}
 	if this.Priority != nil && that1.Priority != nil {
 		if *this.Priority != *that1.Priority {
-			return fmt2.Errorf("Priority this(%v) Not Equal that(%v)", *this.Priority, *that1.Priority)
+			return fmt3.Errorf("Priority this(%v) Not Equal that(%v)", *this.Priority, *that1.Priority)
 		}
 	} else if this.Priority != nil {
-		return fmt2.Errorf("this.Priority == nil && that.Priority != nil")
+		return fmt3.Errorf("this.Priority == nil && that.Priority != nil")
 	} else if that1.Priority != nil {
-		return fmt2.Errorf("Priority this(%v) Not Equal that(%v)", this.Priority, that1.Priority)
+		return fmt3.Errorf("Priority this(%v) Not Equal that(%v)", this.Priority, that1.Priority)
 	}
 	if this.Facility != nil && that1.Facility != nil {
 		if *this.Facility != *that1.Facility {
-			return fmt2.Errorf("Facility this(%v) Not Equal that(%v)", *this.Facility, *that1.Facility)
+			return fmt3.Errorf("Facility this(%v) Not Equal that(%v)", *this.Facility, *that1.Facility)
 		}
 	} else if this.Facility != nil {
-		return fmt2.Errorf("this.Facility == nil && that.Facility != nil")
+		return fmt3.Errorf("this.Facility == nil && that.Facility != nil")
 	} else if that1.Facility != nil {
-		return fmt2.Errorf("Facility this(%v) Not Equal that(%v)", this.Facility, that1.Facility)
+		return fmt3.Errorf("Facility this(%v) Not Equal that(%v)", this.Facility, that1.Facility)
 	}
 	if this.Severity != nil && that1.Severity != nil {
 		if *this.Severity != *that1.Severity {
-			return fmt2.Errorf("Severity this(%v) Not Equal that(%v)", *this.Severity, *that1.Severity)
+			return fmt3.Errorf("Severity this(%v) Not Equal that(%v)", *this.Severity, *that1.Severity)
 		}
 	} else if this.Severity != nil {
-		return fmt2.Errorf("this.Severity == nil && that.Severity != nil")
+		return fmt3.Errorf("this.Severity == nil && that.Severity != nil")
 	} else if that1.Severity != nil {
-		return fmt2.Errorf("Severity this(%v) Not Equal that(%v)", this.Severity, that1.Severity)
+		return fmt3.Errorf("Severity this(%v) Not Equal that(%v)", this.Severity, that1.Severity)
 	}
 	if this.Version != nil && that1.Version != nil {
 		if *this.Version != *that1.Version {
-			return fmt2.Errorf("Version this(%v) Not Equal that(%v)", *this.Version, *that1.Version)
+			return fmt3.Errorf("Version this(%v) Not Equal that(%v)", *this.Version, *that1.Version)
 		}
 	} else if this.Version != nil {
-		return fmt2.Errorf("this.Version == nil && that.Version != nil")
+		return fmt3.Errorf("this.Version == nil && that.Version != nil")
 	} else if that1.Version != nil {
-		return fmt2.Errorf("Version this(%v) Not Equal that(%v)", this.Version, that1.Version)
+		return fmt3.Errorf("Version this(%v) Not Equal that(%v)", this.Version, that1.Version)
 	}
 	if this.Timestamp != nil && that1.Timestamp != nil {
 		if *this.Timestamp != *that1.Timestamp {
-			return fmt2.Errorf("Timestamp this(%v) Not Equal that(%v)", *this.Timestamp, *that1.Timestamp)
+			return fmt3.Errorf("Timestamp this(%v) Not Equal that(%v)", *this.Timestamp, *that1.Timestamp)
 		}
 	} else if this.Timestamp != nil {
-		return fmt2.Errorf("this.Timestamp == nil && that.Timestamp != nil")
+		return fmt3.Errorf("this.Timestamp == nil && that.Timestamp != nil")
 	} else if that1.Timestamp != nil {
-		return fmt2.Errorf("Timestamp this(%v) Not Equal that(%v)", this.Timestamp, that1.Timestamp)
+		return fmt3.Errorf("Timestamp this(%v) Not Equal that(%v)", this.Timestamp, that1.Timestamp)
 	}
 	if this.Hostname != nil && that1.Hostname != nil {
 		if *this.Hostname != *that1.Hostname {
-			return fmt2.Errorf("Hostname this(%v) Not Equal that(%v)", *this.Hostname, *that1.Hostname)
+			return fmt3.Errorf("Hostname this(%v) Not Equal that(%v)", *this.Hostname, *that1.Hostname)
 		}
 	} else if this.Hostname != nil {
-		return fmt2.Errorf("this.Hostname == nil && that.Hostname != nil")
+		return fmt3.Errorf("this.Hostname == nil && that.Hostname != nil")
 	} else if that1.Hostname != nil {
-		return fmt2.Errorf("Hostname this(%v) Not Equal that(%v)", this.Hostname, that1.Hostname)
+		return fmt3.Errorf("Hostname this(%v) Not Equal that(%v)", this.Hostname, that1.Hostname)
 	}
 	if this.Appname != nil && that1.Appname != nil {
 		if *this.Appname != *that1.Appname {
-			return fmt2.Errorf("Appname this(%v) Not Equal that(%v)", *this.Appname, *that1.Appname)
+			return fmt3.Errorf("Appname this(%v) Not Equal that(%v)", *this.Appname, *that1.Appname)
 		}
 	} else if this.Appname != nil {
-		return fmt2.Errorf("this.Appname == nil && that.Appname != nil")
+		return fmt3.Errorf("this.Appname == nil && that.Appname != nil")
 	} else if that1.Appname != nil {
-		return fmt2.Errorf("Appname this(%v) Not Equal that(%v)", this.Appname, that1.Appname)
+		return fmt3.Errorf("Appname this(%v) Not Equal that(%v)", this.Appname, that1.Appname)
 	}
 	if this.Procid != nil && that1.Procid != nil {
 		if *this.Procid != *that1.Procid {
-			return fmt2.Errorf("Procid this(%v) Not Equal that(%v)", *this.Procid, *that1.Procid)
+			return fmt3.Errorf("Procid this(%v) Not Equal that(%v)", *this.Procid, *that1.Procid)
 		}
 	} else if this.Procid != nil {
-		return fmt2.Errorf("this.Procid == nil && that.Procid != nil")
+		return fmt3.Errorf("this.Procid == nil && that.Procid != nil")
 	} else if that1.Procid != nil {
-		return fmt2.Errorf("Procid this(%v) Not Equal that(%v)", this.Procid, that1.Procid)
+		return fmt3.Errorf("Procid this(%v) Not Equal that(%v)", this.Procid, that1.Procid)
 	}
 	if this.Msgid != nil && that1.Msgid != nil {
 		if *this.Msgid != *that1.Msgid {
-			return fmt2.Errorf("Msgid this(%v) Not Equal that(%v)", *this.Msgid, *that1.Msgid)
+			return fmt3.Errorf("Msgid this(%v) Not Equal that(%v)", *this.Msgid, *that1.Msgid)
 		}
 	} else if this.Msgid != nil {
-		return fmt2.Errorf("this.Msgid == nil && that.Msgid != nil")
+		return fmt3.Errorf("this.Msgid == nil && that.Msgid != nil")
 	} else if that1.Msgid != nil {
-		return fmt2.Errorf("Msgid this(%v) Not Equal that(%v)", this.Msgid, that1.Msgid)
+		return fmt3.Errorf("Msgid this(%v) Not Equal that(%v)", this.Msgid, that1.Msgid)
 	}
 	if this.Structureddata != nil && that1.Structureddata != nil {
 		if *this.Structureddata != *that1.Structureddata {
-			return fmt2.Errorf("Structureddata this(%v) Not Equal that(%v)", *this.Structureddata, *that1.Structureddata)
+			return fmt3.Errorf("Structureddata this(%v) Not Equal that(%v)", *this.Structureddata, *that1.Structureddata)
 		}
 	} else if this.Structureddata != nil {
-		return fmt2.Errorf("this.Structureddata == nil && that.Structureddata != nil")
+		return fmt3.Errorf("this.Structureddata == nil && that.Structureddata != nil")
 	} else if that1.Structureddata != nil {
-		return fmt2.Errorf("Structureddata this(%v) Not Equal that(%v)", this.Structureddata, that1.Structureddata)
+		return fmt3.Errorf("Structureddata this(%v) Not Equal that(%v)", this.Structureddata, that1.Structureddata)
 	}
 	if this.Message != nil && that1.Message != nil {
 		if *this.Message != *that1.Message {
-			return fmt2.Errorf("Message this(%v) Not Equal that(%v)", *this.Message, *that1.Message)
+			return fmt3.Errorf("Message this(%v) Not Equal that(%v)", *this.Message, *that1.Message)
 		}
 	} else if this.Message != nil {
-		return fmt2.Errorf("this.Message == nil && that.Message != nil")
+		return fmt3.Errorf("this.Message == nil && that.Message != nil")
 	} else if that1.Message != nil {
-		return fmt2.Errorf("Message this(%v) Not Equal that(%v)", this.Message, that1.Message)
+		return fmt3.Errorf("Message this(%v) Not Equal that(%v)", this.Message, that1.Message)
+	}
+	if this.Id != nil && that1.Id != nil {
+		if *this.Id != *that1.Id {
+			return fmt3.Errorf("Id this(%v) Not Equal that(%v)", *this.Id, *that1.Id)
+		}
+	} else if this.Id != nil {
+		return fmt3.Errorf("this.Id == nil && that.Id != nil")
+	} else if that1.Id != nil {
+		return fmt3.Errorf("Id this(%v) Not Equal that(%v)", this.Id, that1.Id)
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
-		return fmt2.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
+		return fmt3.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
 	}
 	return nil
 }
@@ -2269,6 +2387,15 @@ func (this *Rfc5424) Equal(that interface{}) bool {
 	} else if that1.Message != nil {
 		return false
 	}
+	if this.Id != nil && that1.Id != nil {
+		if *this.Id != *that1.Id {
+			return false
+		}
+	} else if this.Id != nil {
+		return false
+	} else if that1.Id != nil {
+		return false
+	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
 		return false
 	}
@@ -2279,41 +2406,41 @@ func (this *Json) VerboseEqual(that interface{}) error {
 		if this == nil {
 			return nil
 		}
-		return fmt2.Errorf("that == nil && this != nil")
+		return fmt3.Errorf("that == nil && this != nil")
 	}
 
 	that1, ok := that.(*Json)
 	if !ok {
-		return fmt2.Errorf("that is not of type *Json")
+		return fmt3.Errorf("that is not of type *Json")
 	}
 	if that1 == nil {
 		if this == nil {
 			return nil
 		}
-		return fmt2.Errorf("that is type *Json but is nil && this != nil")
+		return fmt3.Errorf("that is type *Json but is nil && this != nil")
 	} else if this == nil {
-		return fmt2.Errorf("that is type *Jsonbut is not nil && this == nil")
+		return fmt3.Errorf("that is type *Jsonbut is not nil && this == nil")
 	}
-	if this.Timestamp != nil && that1.Timestamp != nil {
-		if *this.Timestamp != *that1.Timestamp {
-			return fmt2.Errorf("Timestamp this(%v) Not Equal that(%v)", *this.Timestamp, *that1.Timestamp)
+	if this.Id != nil && that1.Id != nil {
+		if *this.Id != *that1.Id {
+			return fmt3.Errorf("Id this(%v) Not Equal that(%v)", *this.Id, *that1.Id)
 		}
-	} else if this.Timestamp != nil {
-		return fmt2.Errorf("this.Timestamp == nil && that.Timestamp != nil")
-	} else if that1.Timestamp != nil {
-		return fmt2.Errorf("Timestamp this(%v) Not Equal that(%v)", this.Timestamp, that1.Timestamp)
+	} else if this.Id != nil {
+		return fmt3.Errorf("this.Id == nil && that.Id != nil")
+	} else if that1.Id != nil {
+		return fmt3.Errorf("Id this(%v) Not Equal that(%v)", this.Id, that1.Id)
 	}
 	if this.Json != nil && that1.Json != nil {
 		if *this.Json != *that1.Json {
-			return fmt2.Errorf("Json this(%v) Not Equal that(%v)", *this.Json, *that1.Json)
+			return fmt3.Errorf("Json this(%v) Not Equal that(%v)", *this.Json, *that1.Json)
 		}
 	} else if this.Json != nil {
-		return fmt2.Errorf("this.Json == nil && that.Json != nil")
+		return fmt3.Errorf("this.Json == nil && that.Json != nil")
 	} else if that1.Json != nil {
-		return fmt2.Errorf("Json this(%v) Not Equal that(%v)", this.Json, that1.Json)
+		return fmt3.Errorf("Json this(%v) Not Equal that(%v)", this.Json, that1.Json)
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
-		return fmt2.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
+		return fmt3.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
 	}
 	return nil
 }
@@ -2337,13 +2464,13 @@ func (this *Json) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.Timestamp != nil && that1.Timestamp != nil {
-		if *this.Timestamp != *that1.Timestamp {
+	if this.Id != nil && that1.Id != nil {
+		if *this.Id != *that1.Id {
 			return false
 		}
-	} else if this.Timestamp != nil {
+	} else if this.Id != nil {
 		return false
-	} else if that1.Timestamp != nil {
+	} else if that1.Id != nil {
 		return false
 	}
 	if this.Json != nil && that1.Json != nil {
@@ -2365,83 +2492,83 @@ func (this *Food) VerboseEqual(that interface{}) error {
 		if this == nil {
 			return nil
 		}
-		return fmt2.Errorf("that == nil && this != nil")
+		return fmt3.Errorf("that == nil && this != nil")
 	}
 
 	that1, ok := that.(*Food)
 	if !ok {
-		return fmt2.Errorf("that is not of type *Food")
+		return fmt3.Errorf("that is not of type *Food")
 	}
 	if that1 == nil {
 		if this == nil {
 			return nil
 		}
-		return fmt2.Errorf("that is type *Food but is nil && this != nil")
+		return fmt3.Errorf("that is type *Food but is nil && this != nil")
 	} else if this == nil {
-		return fmt2.Errorf("that is type *Foodbut is not nil && this == nil")
+		return fmt3.Errorf("that is type *Foodbut is not nil && this == nil")
 	}
 	if this.Type != nil && that1.Type != nil {
 		if *this.Type != *that1.Type {
-			return fmt2.Errorf("Type this(%v) Not Equal that(%v)", *this.Type, *that1.Type)
+			return fmt3.Errorf("Type this(%v) Not Equal that(%v)", *this.Type, *that1.Type)
 		}
 	} else if this.Type != nil {
-		return fmt2.Errorf("this.Type == nil && that.Type != nil")
+		return fmt3.Errorf("this.Type == nil && that.Type != nil")
 	} else if that1.Type != nil {
-		return fmt2.Errorf("Type this(%v) Not Equal that(%v)", this.Type, that1.Type)
+		return fmt3.Errorf("Type this(%v) Not Equal that(%v)", this.Type, that1.Type)
 	}
 	if len(this.Rfc3164) != len(that1.Rfc3164) {
-		return fmt2.Errorf("Rfc3164 this(%v) Not Equal that(%v)", len(this.Rfc3164), len(that1.Rfc3164))
+		return fmt3.Errorf("Rfc3164 this(%v) Not Equal that(%v)", len(this.Rfc3164), len(that1.Rfc3164))
 	}
 	for i := range this.Rfc3164 {
 		if !this.Rfc3164[i].Equal(that1.Rfc3164[i]) {
-			return fmt2.Errorf("Rfc3164 this[%v](%v) Not Equal that[%v](%v)", i, this.Rfc3164[i], i, that1.Rfc3164[i])
+			return fmt3.Errorf("Rfc3164 this[%v](%v) Not Equal that[%v](%v)", i, this.Rfc3164[i], i, that1.Rfc3164[i])
 		}
 	}
 	if len(this.Rfc5424) != len(that1.Rfc5424) {
-		return fmt2.Errorf("Rfc5424 this(%v) Not Equal that(%v)", len(this.Rfc5424), len(that1.Rfc5424))
+		return fmt3.Errorf("Rfc5424 this(%v) Not Equal that(%v)", len(this.Rfc5424), len(that1.Rfc5424))
 	}
 	for i := range this.Rfc5424 {
 		if !this.Rfc5424[i].Equal(that1.Rfc5424[i]) {
-			return fmt2.Errorf("Rfc5424 this[%v](%v) Not Equal that[%v](%v)", i, this.Rfc5424[i], i, that1.Rfc5424[i])
+			return fmt3.Errorf("Rfc5424 this[%v](%v) Not Equal that[%v](%v)", i, this.Rfc5424[i], i, that1.Rfc5424[i])
 		}
 	}
 	if len(this.Json) != len(that1.Json) {
-		return fmt2.Errorf("Json this(%v) Not Equal that(%v)", len(this.Json), len(that1.Json))
+		return fmt3.Errorf("Json this(%v) Not Equal that(%v)", len(this.Json), len(that1.Json))
 	}
 	for i := range this.Json {
 		if !this.Json[i].Equal(that1.Json[i]) {
-			return fmt2.Errorf("Json this[%v](%v) Not Equal that[%v](%v)", i, this.Json[i], i, that1.Json[i])
+			return fmt3.Errorf("Json this[%v](%v) Not Equal that[%v](%v)", i, this.Json[i], i, that1.Json[i])
 		}
 	}
 	if this.Index != nil && that1.Index != nil {
 		if *this.Index != *that1.Index {
-			return fmt2.Errorf("Index this(%v) Not Equal that(%v)", *this.Index, *that1.Index)
+			return fmt3.Errorf("Index this(%v) Not Equal that(%v)", *this.Index, *that1.Index)
 		}
 	} else if this.Index != nil {
-		return fmt2.Errorf("this.Index == nil && that.Index != nil")
+		return fmt3.Errorf("this.Index == nil && that.Index != nil")
 	} else if that1.Index != nil {
-		return fmt2.Errorf("Index this(%v) Not Equal that(%v)", this.Index, that1.Index)
+		return fmt3.Errorf("Index this(%v) Not Equal that(%v)", this.Index, that1.Index)
 	}
 	if this.IndexType != nil && that1.IndexType != nil {
 		if *this.IndexType != *that1.IndexType {
-			return fmt2.Errorf("IndexType this(%v) Not Equal that(%v)", *this.IndexType, *that1.IndexType)
+			return fmt3.Errorf("IndexType this(%v) Not Equal that(%v)", *this.IndexType, *that1.IndexType)
 		}
 	} else if this.IndexType != nil {
-		return fmt2.Errorf("this.IndexType == nil && that.IndexType != nil")
+		return fmt3.Errorf("this.IndexType == nil && that.IndexType != nil")
 	} else if that1.IndexType != nil {
-		return fmt2.Errorf("IndexType this(%v) Not Equal that(%v)", this.IndexType, that1.IndexType)
+		return fmt3.Errorf("IndexType this(%v) Not Equal that(%v)", this.IndexType, that1.IndexType)
 	}
-	if this.Id != nil && that1.Id != nil {
-		if *this.Id != *that1.Id {
-			return fmt2.Errorf("Id this(%v) Not Equal that(%v)", *this.Id, *that1.Id)
+	if this.TimeNano != nil && that1.TimeNano != nil {
+		if *this.TimeNano != *that1.TimeNano {
+			return fmt3.Errorf("TimeNano this(%v) Not Equal that(%v)", *this.TimeNano, *that1.TimeNano)
 		}
-	} else if this.Id != nil {
-		return fmt2.Errorf("this.Id == nil && that.Id != nil")
-	} else if that1.Id != nil {
-		return fmt2.Errorf("Id this(%v) Not Equal that(%v)", this.Id, that1.Id)
+	} else if this.TimeNano != nil {
+		return fmt3.Errorf("this.TimeNano == nil && that.TimeNano != nil")
+	} else if that1.TimeNano != nil {
+		return fmt3.Errorf("TimeNano this(%v) Not Equal that(%v)", this.TimeNano, that1.TimeNano)
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
-		return fmt2.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
+		return fmt3.Errorf("XXX_unrecognized this(%v) Not Equal that(%v)", this.XXX_unrecognized, that1.XXX_unrecognized)
 	}
 	return nil
 }
@@ -2516,13 +2643,13 @@ func (this *Food) Equal(that interface{}) bool {
 	} else if that1.IndexType != nil {
 		return false
 	}
-	if this.Id != nil && that1.Id != nil {
-		if *this.Id != *that1.Id {
+	if this.TimeNano != nil && that1.TimeNano != nil {
+		if *this.TimeNano != *that1.TimeNano {
 			return false
 		}
-	} else if this.Id != nil {
+	} else if this.TimeNano != nil {
 		return false
-	} else if that1.Id != nil {
+	} else if that1.TimeNano != nil {
 		return false
 	}
 	if !bytes.Equal(this.XXX_unrecognized, that1.XXX_unrecognized) {
