@@ -5,7 +5,7 @@ import (
 	log "github.com/cihub/seelog"
 	nano "github.com/op/go-nanomsg"
 	"sync"
-	"time"
+	// "time"
 )
 
 const ()
@@ -17,12 +17,13 @@ func Run(channel <-chan messaging.Food, wg *sync.WaitGroup) {
 		log.Error(err)
 	}
 	defer socket.Close()
+	socket.SetSendTimeout(0)
 	_, err = socket.Connect("tcp://localhost:2025")
 	if nil != err {
 		log.Error(err)
 		return
 	}
-	socket.SetSendTimeout(1 * time.Minute)
+
 	for msg := range channel {
 		//add time here
 		log.Trace(msg)

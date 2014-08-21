@@ -151,12 +151,12 @@ main:
 					conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
 				}
 			} else {
-				log.Info("Closing connection")
+				log.Info("Closing Syslog connection")
 				break main
 			}
 		case _, ok := <-done:
 			if !ok {
-				log.Debug("Closing connection because of shutdown")
+				log.Debug("Closing Syslog connection because of shutdown")
 				break main
 			} else {
 				log.Trace("Unknown message")
