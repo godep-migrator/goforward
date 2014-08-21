@@ -1,12 +1,11 @@
 package forward
 
 import (
-	"code.google.com/p/go-uuid/uuid"
 	"github.com/CapillarySoftware/goforward/messaging"
 	log "github.com/cihub/seelog"
 	nano "github.com/op/go-nanomsg"
 	"sync"
-	"time"
+	// "time"
 )
 
 const ()
@@ -18,15 +17,15 @@ func Run(channel <-chan messaging.Food, wg *sync.WaitGroup) {
 		log.Error(err)
 	}
 	defer socket.Close()
+	socket.SetSendTimeout(0)
 	_, err = socket.Connect("tcp://localhost:2025")
 	if nil != err {
 		log.Error(err)
 		return
 	}
-	socket.SetSendTimeout(1 * time.Minute)
+
 	for msg := range channel {
-		id := uuid.NewRandom().String()
-		msg.Id = &id
+		//add time here
 		log.Trace(msg)
 		bytes, err := msg.Marshal()
 		if nil != err {

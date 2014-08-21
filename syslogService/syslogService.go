@@ -8,6 +8,7 @@ import (
 	. "github.com/jeromer/syslogparser"
 	"github.com/jeromer/syslogparser/rfc3164"
 	// 	"github.com/jeromer/syslogparser/rfc5424"
+	"code.google.com/p/go-uuid/uuid"
 	"github.com/CapillarySoftware/goforward/messaging"
 	log "github.com/cihub/seelog"
 	"net"
@@ -150,13 +151,15 @@ main:
 					conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
 				}
 			} else {
-				log.Info("Closing connection")
+				log.Info("Closing Syslog connection")
 				break main
 			}
 		case _, ok := <-done:
 			if !ok {
-				log.Debug("Closing connection because of shutdown")
+				log.Debug("Closing Syslog connection because of shutdown")
 				break main
+			} else {
+				log.Trace("Unknown message")
 			}
 
 		}
@@ -263,8 +266,12 @@ func RFC3164ToProto(lParts LogParts) (food *messaging.Food, err error) {
 			}
 		}
 	}
+	id := uuid.NewRandom().String()
+	proto.Id = &id
 	food = new(messaging.Food)
 	food.Type = &pType
+	ts := time.Now().UTC().UnixNano()
+	food.TimeNano = &ts
 	food.Rfc3164 = append(food.Rfc3164, proto)
 	// food.Rfc3164 = proto
 	return

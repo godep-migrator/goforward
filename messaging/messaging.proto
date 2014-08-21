@@ -30,6 +30,7 @@ message Rfc3164 {
 	optional int32 priority = 5;
 	optional int32 facility = 6;
 	optional int32 severity = 7;
+	optional string id = 8;
 }
 
 message Rfc5424 {
@@ -44,10 +45,11 @@ message Rfc5424 {
 	optional string msgid = 9;
 	optional string structureddata = 10;
 	optional string message = 11;
+	optional string id = 12;
 }
 
 message Json {
-	optional int64 timestamp = 1;
+	optional string id = 1;
 	optional string json = 2;
 }
 
@@ -58,6 +60,5 @@ message Food {
 	repeated Json json = 4;
 	optional string index = 5;
 	optional string indexType = 6;
-	optional string id = 7;
-
+	optional int64 timeNano = 7;
 }
