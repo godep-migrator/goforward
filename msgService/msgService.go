@@ -4,6 +4,7 @@ package msgService
 import (
 	"github.com/CapillarySoftware/goforward/messaging"
 	log "github.com/cihub/seelog"
+	"sync"
 	"time"
 )
 
@@ -11,10 +12,12 @@ import (
 type Service interface {
 	Bind() error
 	SendMessages(chan messaging.Food) error
+	Close()
 }
 
 //Main server thread.
-func Run(server Service, msgsChan chan messaging.Food) {
+func Run(server Service, msgsChan chan messaging.Food, wg *sync.WaitGroup) {
+	defer wg.Done()
 	for {
 		err := server.Bind()
 		if nil != err {
