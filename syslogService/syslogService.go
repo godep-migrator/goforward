@@ -39,7 +39,8 @@ type SyslogService struct {
 	format Format
 	port   int
 	cType  ConnectionType
-	ln     *net.TCPListener
+	ln     net.Listener
+	udp    *net.UDPConn
 	done   chan bool
 }
 
@@ -65,8 +66,8 @@ main:
 		case <-this.done:
 			break main
 		default:
-			this.ln.SetDeadline(time.Now().Add(2 * time.Second))
-			conn, err = this.ln.Accept()
+			this.ln.(*net.TCPListener).SetDeadline(time.Now().Add(2 * time.Second))
+			conn, err = this.ln.(*net.TCPListener).Accept()
 			if err != nil {
 				log.Debug(err)
 				//usually read / write timeout
@@ -74,10 +75,33 @@ main:
 			}
 			log.Trace("Accepted connection")
 			this.wg.Add(1)
-			go ProcessSyslog(conn, msgsChan, this.format, 5, this.done, this.wg)
+			go ProcessTCPSyslog(conn, msgsChan, this.format, 5, this.done, this.wg)
 		}
 	}
 	log.Debug("StartTCP exiting")
+	this.wg.Done()
+}
+
+func (this *SyslogService) startUDP(msgChan chan *messaging.Food) {
+	this.wg.Add(1)
+	this.udp.SetReadBuffer(32768)
+	defer this.udp.Close()
+main:
+	for {
+		select {
+		case <-this.done:
+			break main
+		default:
+			buf := make([]byte, 2000)
+			n, address, err := this.udp.ReadFromUDP(buf)
+			if nil != err {
+				log.Error(err)
+				continue
+			}
+			go this.processUDPSyslog(&n, address, &buf, msgChan)
+
+		}
+	}
 	this.wg.Done()
 }
 
@@ -91,7 +115,7 @@ func (this *SyslogService) Start(msgsChan chan *messaging.Food) {
 	case UDP:
 		{
 
-			log.Info("UDP Called")
+			go this.startUDP(msgsChan)
 		}
 	}
 	return
@@ -99,27 +123,27 @@ func (this *SyslogService) Start(msgsChan chan *messaging.Food) {
 
 //Bind to syslog socket
 func (this *SyslogService) Bind() (err error) {
-	var ln *net.TCPListener
-	var listen net.Listener
+
 	switch this.cType {
 	case TCP:
 		{
-			listen, err = net.Listen(string(this.cType), ":"+strconv.Itoa(this.port))
+			this.ln, err = net.Listen(string(this.cType), ":"+strconv.Itoa(this.port))
 			if nil != err {
 				return
 			}
-			ln = listen.(*net.TCPListener)
 		}
 	case UDP:
 		{
-			// var (
-			// 	udpAddr *net.UDPAddr
-			// )
-			// udpAddr, err = net.ResolveUDPAddr("udp", ":"+this.port)
-			// if err != nil {
-			// 	return err
-			// }
-			// this.udpConn, err = net.ListenUDP(string(this.cType), udpAddr)
+
+			addr, err := net.ResolveUDPAddr("udp", ":"+strconv.Itoa(this.port))
+			if nil != err {
+				return err
+			}
+			this.udp, err = net.ListenUDP("udp", addr)
+			if nil != err {
+				return err
+			}
+			// this.ln, err = net.Listen("udp", "127.0.0.1:"+strconv.Itoa(this.port))
 		}
 	default:
 		{
@@ -127,7 +151,6 @@ func (this *SyslogService) Bind() (err error) {
 		}
 
 	}
-	this.ln = ln
 	return err
 }
 
@@ -164,8 +187,36 @@ func (this *SyslogService) Close() {
 // 	return
 // }
 
+func (this *SyslogService) processUDPSyslog(n *int, addr *net.UDPAddr, data *[]byte, msgsChan chan *messaging.Food) {
+	var (
+		proto *messaging.Food
+		err   error
+	)
+	switch this.format {
+	case RFC3164:
+		{
+			msg := rfc3164.NewParser(*data)
+			msg.Parse()
+			proto, err = RFC3164ToProto(msg.Dump())
+		}
+	case RFC5423:
+		{
+			errors.New("RFC5423 not implemented yet...")
+
+		}
+	}
+	if nil != err {
+		log.Error(err)
+		return
+	} else {
+		log.Info(proto)
+		msgsChan <- proto
+	}
+
+}
+
 //Scan and parse messages
-func ProcessSyslog(conn net.Conn, msgsChan chan *messaging.Food, format Format, timeout int, done <-chan bool, wg *sync.WaitGroup) {
+func ProcessTCPSyslog(conn net.Conn, msgsChan chan *messaging.Food, format Format, timeout int, done <-chan bool, wg *sync.WaitGroup) {
 	if timeout > 0 {
 		conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
 	}
