@@ -10,7 +10,7 @@ import (
 
 const ()
 
-func Run(channel <-chan messaging.Food, wg *sync.WaitGroup) {
+func Run(channel <-chan *messaging.Food, wg *sync.WaitGroup) {
 	defer wg.Done()
 	socket, err := nano.NewPushSocket()
 	if nil != err {
@@ -26,7 +26,7 @@ func Run(channel <-chan messaging.Food, wg *sync.WaitGroup) {
 
 	for msg := range channel {
 		//add time here
-		log.Trace(msg)
+		// log.Trace(msg)
 		bytes, err := msg.Marshal()
 		if nil != err {
 			log.Error(err)

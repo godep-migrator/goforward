@@ -31,10 +31,8 @@ var _ = Describe("SyslogService", func() {
 	Describe("Invalid setup tests", func() {
 
 		It("Invalid port test", func() {
-			serv := SyslogService{ConType: TCP,
-				RFCFormat: RFC3164,
-				Port:      "99999999999"}
-			err := serv.Bind()
+			// cType ConnectionType, format Format, port int
+			_, err := NewSyslogService(TCP, RFC3164, 99999999999)
 			Expect(err).ShouldNot(Equal(BeNil()))
 		})
 
@@ -98,10 +96,7 @@ var _ = Describe("SyslogService", func() {
 
 	Describe("Valid Tests", func() {
 		It("Bind to valid port", func() {
-			serv := SyslogService{ConType: TCP,
-				RFCFormat: RFC3164,
-				Port:      "9099"}
-			err := serv.Bind()
+			_, err := NewSyslogService(TCP, RFC3164, 9019)
 			Expect(err).Should(BeNil())
 
 		})
