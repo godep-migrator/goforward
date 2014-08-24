@@ -86,8 +86,10 @@ func (this *SyslogService) startUDP(msgChan chan *messaging.Food) {
 	this.wg.Add(1)
 	this.udp.SetReadBuffer(32768)
 	defer this.udp.Close()
+
 main:
 	for {
+		this.udp.SetDeadline(time.Now().Add(2 * time.Second))
 		select {
 		case <-this.done:
 			break main
@@ -95,7 +97,7 @@ main:
 			buf := make([]byte, 2000)
 			n, address, err := this.udp.ReadFromUDP(buf)
 			if nil != err {
-				log.Error(err)
+				log.Debug(err)
 				continue
 			}
 			go this.processUDPSyslog(&n, address, &buf, msgChan)
@@ -161,32 +163,6 @@ func (this *SyslogService) Close() {
 	log.Info("SyslogService closed")
 }
 
-// //Get message from syslog socket
-// func (this *SyslogService) SendMessages(msgsChan chan messaging.Food) (err error) {
-// 	switch this.ConType {
-// 	case TCP:
-// 		{
-// 			for {
-// 				var conn net.Conn
-// 				conn, err = this.ln.Accept()
-// 				log.Trace("Accepted connection")
-// 				if err != nil {
-// 					return
-// 				}
-// 				this.wg.Add(1)
-// 				go ProcessSyslog(conn, msgsChan, this.RFCFormat, 240, this.done, this.wg)
-// 			}
-// 		}
-
-// 	case UDP:
-// 		{
-// 			this.wg.Add(1)
-// 			go ProcessSyslog(this.udpConn, msgsChan, this.RFCFormat, 0, this.done, this.wg)
-// 		}
-// 	}
-// 	return
-// }
-
 func (this *SyslogService) processUDPSyslog(n *int, addr *net.UDPAddr, data *[]byte, msgsChan chan *messaging.Food) {
 	var (
 		proto *messaging.Food
@@ -209,7 +185,6 @@ func (this *SyslogService) processUDPSyslog(n *int, addr *net.UDPAddr, data *[]b
 		log.Error(err)
 		return
 	} else {
-		log.Info(proto)
 		msgsChan <- proto
 	}
 
@@ -376,6 +351,5 @@ func RFC3164ToProto(lParts LogParts) (food *messaging.Food, err error) {
 	ts := time.Now().UTC().UnixNano()
 	food.TimeNano = &ts
 	food.Rfc3164 = append(food.Rfc3164, proto)
-	// food.Rfc3164 = proto
 	return
 }
