@@ -5,12 +5,10 @@ import (
 	"flag"
 	"github.com/CapillarySoftware/goforward/forward"
 	"github.com/CapillarySoftware/goforward/messaging"
-	"github.com/CapillarySoftware/goforward/msgService"
 	sys "github.com/CapillarySoftware/goforward/syslogService"
 	log "github.com/cihub/seelog"
 	"os"
 	"os/signal"
-	"strconv"
 	"strings"
 	"sync"
 )
@@ -49,28 +47,32 @@ func Death(c <-chan os.Signal, death chan int) {
 func Run() {
 	log.Info("Starting goforward")
 	flag.Parse()
-	var wg sync.WaitGroup
-
-	proto := ProcessProtocol(*protocol)
-
-	msgForwardChan := make(chan messaging.Food, 1000)
-	serv := sys.NewSyslogService(proto, sys.RFC3164, strconv.Itoa(*port))
-
-	wg.Add(2)
-	go msgService.Run(&serv, msgForwardChan, &wg)
-	go forward.Run(msgForwardChan, &wg)
+	wg := sync.WaitGroup{}
 
 	c := make(chan os.Signal, 1)
 	s := make(chan int, 1)
 	signal.Notify(c)
 	go Death(c, s)
+
+	proto := ProcessProtocol(*protocol)
+
+	msgForwardChan := make(chan *messaging.Food, 1000)
+	serv, err := sys.NewSyslogService(proto, sys.RFC3164, *port)
+	if nil != err {
+		log.Error("Error creating syslog service: ", err)
+		s <- 1
+	}
+	wg.Add(1)
+	go forward.Run(msgForwardChan, &wg)
+	serv.Start(msgForwardChan)
 	death := <-s //time for shutdown
 	log.Info("Closing syslog server")
 	serv.Close()
-	//close only after all senders are done
 	close(msgForwardChan)
-	log.Info("Waiting for everything to come down gracefully...")
 	wg.Wait()
+	//close only after all senders are done
+
+	log.Info("Waiting for everything to come down gracefully...")
 	log.Debug("Death return code: ", death)
 	log.Info("Exiting")
 }

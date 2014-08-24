@@ -12,16 +12,17 @@ import (
 	"github.com/CapillarySoftware/goforward/messaging"
 	log "github.com/cihub/seelog"
 	"net"
+	"strconv"
 	"sync"
 	"time"
 )
 
 //Define RFC syslog formats supported
-type Format int
+type Format string
 
 const (
-	RFC3164 Format = 1
-	RFC5423 Format = 2
+	RFC3164 Format = "RFC3164"
+	RFC5423 Format = "RFC5423"
 )
 
 //Define connection types supported.
@@ -34,86 +35,137 @@ const (
 
 //Basic service struct.
 type SyslogService struct {
-	ConType   ConnectionType
-	RFCFormat Format
-	Port      string
-	ln        net.Listener
-	udpConn   *net.UDPConn
-	done      chan bool
-	wg        *sync.WaitGroup
+	wg     *sync.WaitGroup
+	format Format
+	port   int
+	cType  ConnectionType
+	ln     *net.TCPListener
+	done   chan bool
 }
 
-func NewSyslogService(cType ConnectionType, format Format, port string) (serv SyslogService) {
-	done := make(chan bool, 1)
+//Create a new syslogService
+func NewSyslogService(cType ConnectionType, format Format, port int) (sys SyslogService, err error) {
 	wg := sync.WaitGroup{}
-	serv = SyslogService{ConType: cType, RFCFormat: format, Port: port, done: done, wg: &wg}
+	done := make(chan bool, 1)
+	sys = SyslogService{wg: &wg, format: format, port: port, cType: cType, done: done}
+	err = sys.Bind()
+	return
+}
+
+//Start the tcp server
+func (this *SyslogService) startTCP(msgsChan chan *messaging.Food) {
+	this.wg.Add(1)
+main:
+	for {
+		var (
+			conn net.Conn
+			err  error
+		)
+		select {
+		case <-this.done:
+			break main
+		default:
+			this.ln.SetDeadline(time.Now().Add(2 * time.Second))
+			conn, err = this.ln.Accept()
+			if err != nil {
+				log.Debug(err)
+				//usually read / write timeout
+				continue
+			}
+			log.Trace("Accepted connection")
+			this.wg.Add(1)
+			go ProcessSyslog(conn, msgsChan, this.format, 5, this.done, this.wg)
+		}
+	}
+	log.Debug("StartTCP exiting")
+	this.wg.Done()
+}
+
+//Initialize syslog service
+func (this *SyslogService) Start(msgsChan chan *messaging.Food) {
+	switch this.cType {
+	case TCP:
+		{
+			go this.startTCP(msgsChan)
+		}
+	case UDP:
+		{
+
+			log.Info("UDP Called")
+		}
+	}
 	return
 }
 
 //Bind to syslog socket
 func (this *SyslogService) Bind() (err error) {
-	switch this.ConType {
+	var ln *net.TCPListener
+	var listen net.Listener
+	switch this.cType {
 	case TCP:
 		{
-			this.ln, err = net.Listen(string(this.ConType), ":"+this.Port)
+			listen, err = net.Listen(string(this.cType), ":"+strconv.Itoa(this.port))
+			if nil != err {
+				return
+			}
+			ln = listen.(*net.TCPListener)
 		}
 	case UDP:
 		{
-			var (
-				udpAddr *net.UDPAddr
-			)
-			udpAddr, err = net.ResolveUDPAddr("udp", ":"+this.Port)
-			if err != nil {
-				return err
-			}
-			this.udpConn, err = net.ListenUDP(string(this.ConType), udpAddr)
+			// var (
+			// 	udpAddr *net.UDPAddr
+			// )
+			// udpAddr, err = net.ResolveUDPAddr("udp", ":"+this.port)
+			// if err != nil {
+			// 	return err
+			// }
+			// this.udpConn, err = net.ListenUDP(string(this.cType), udpAddr)
 		}
 	default:
 		{
-			log.Warn("Failed to provide valid connection type : ", this.ConType)
+			log.Warn("Failed to provide valid connection type : ", this.cType)
 		}
 
 	}
-
-	if err != nil {
-		return
-	}
-	return
+	this.ln = ln
+	return err
 }
 
 func (this *SyslogService) Close() {
+	log.Info("Waiting for syslog connections to finish")
 	close(this.done)
 	this.wg.Wait()
+	log.Info("SyslogService closed")
 }
 
-//Get message from syslog socket
-func (this *SyslogService) SendMessages(msgsChan chan messaging.Food) (err error) {
-	switch this.ConType {
-	case TCP:
-		{
-			for {
-				var conn net.Conn
-				conn, err = this.ln.Accept()
-				log.Trace("Accepted connection")
-				if err != nil {
-					return
-				}
-				this.wg.Add(1)
-				go SendMessagesFromSocket(conn, msgsChan, this.RFCFormat, 240, this.done, this.wg)
-			}
-		}
+// //Get message from syslog socket
+// func (this *SyslogService) SendMessages(msgsChan chan messaging.Food) (err error) {
+// 	switch this.ConType {
+// 	case TCP:
+// 		{
+// 			for {
+// 				var conn net.Conn
+// 				conn, err = this.ln.Accept()
+// 				log.Trace("Accepted connection")
+// 				if err != nil {
+// 					return
+// 				}
+// 				this.wg.Add(1)
+// 				go ProcessSyslog(conn, msgsChan, this.RFCFormat, 240, this.done, this.wg)
+// 			}
+// 		}
 
-	case UDP:
-		{
-			this.wg.Add(1)
-			go SendMessagesFromSocket(this.udpConn, msgsChan, this.RFCFormat, 0, this.done, this.wg)
-		}
-	}
-	return
-}
+// 	case UDP:
+// 		{
+// 			this.wg.Add(1)
+// 			go ProcessSyslog(this.udpConn, msgsChan, this.RFCFormat, 0, this.done, this.wg)
+// 		}
+// 	}
+// 	return
+// }
 
 //Scan and parse messages
-func SendMessagesFromSocket(conn net.Conn, msgsChan chan messaging.Food, format Format, timeout int, done <-chan bool, wg *sync.WaitGroup) {
+func ProcessSyslog(conn net.Conn, msgsChan chan *messaging.Food, format Format, timeout int, done <-chan bool, wg *sync.WaitGroup) {
 	if timeout > 0 {
 		conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
 	}
@@ -143,15 +195,15 @@ main:
 				}
 				if nil != err {
 					log.Error(err)
+					continue
 				} else {
-					msgsChan <- *proto
+					msgsChan <- proto
 				}
 
 				if timeout > 0 {
 					conn.SetDeadline(time.Now().Add(time.Duration(timeout) * time.Second))
 				}
 			} else {
-				log.Info("Closing Syslog connection")
 				break main
 			}
 		case _, ok := <-done:
@@ -164,7 +216,7 @@ main:
 
 		}
 	}
-
+	log.Info("Closing Syslog connection")
 	return
 }
 
