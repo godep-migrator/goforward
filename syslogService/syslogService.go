@@ -185,7 +185,6 @@ func (this *SyslogService) processUDPSyslog(n *int, addr *net.UDPAddr, data *[]b
 		log.Error(err)
 		return
 	} else {
-		log.Info(proto)
 		msgsChan <- proto
 	}
 
