@@ -1,6 +1,7 @@
 package syslogService_test
 
 import (
+	"github.com/CapillarySoftware/goforward/messaging"
 	. "github.com/CapillarySoftware/goforward/syslogService"
 	. "github.com/jeromer/syslogparser"
 
@@ -14,6 +15,7 @@ var _ = Describe("SyslogService", func() {
 
 	var l LogParts
 	var scanText MockScannerText
+	var msgChan chan *messaging.Food
 	BeforeEach(func() {
 		l = LogParts{
 			"timestamp": time.Now(),
@@ -26,13 +28,14 @@ var _ = Describe("SyslogService", func() {
 		}
 		scanText = *new(MockScannerText)
 		scanText.TValue = "Bad input"
+		msgChan = make(chan *messaging.Food, 1000)
 
 	})
 	Describe("Invalid setup tests", func() {
 
 		It("Invalid port test", func() {
 			// cType ConnectionType, format Format, port int
-			_, err := NewSyslogService(TCP, RFC3164, 99999999999)
+			_, err := NewSyslogService(TCP, RFC3164, 99999999999, msgChan)
 			Expect(err).ShouldNot(Equal(BeNil()))
 		})
 
@@ -96,7 +99,7 @@ var _ = Describe("SyslogService", func() {
 
 	Describe("Valid Tests", func() {
 		It("Bind to valid port", func() {
-			_, err := NewSyslogService(TCP, RFC3164, 9019)
+			_, err := NewSyslogService(TCP, RFC3164, 9019, msgChan)
 			Expect(err).Should(BeNil())
 
 		})
