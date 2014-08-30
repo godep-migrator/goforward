@@ -45,11 +45,15 @@ type SyslogService struct {
 }
 
 //Create a new syslogService
-func NewSyslogService(cType ConnectionType, format Format, port int) (sys SyslogService, err error) {
+func NewSyslogService(cType ConnectionType, format Format, port int, msgsChan chan *messaging.Food) (sys SyslogService, err error) {
 	wg := sync.WaitGroup{}
 	done := make(chan bool, 1)
 	sys = SyslogService{wg: &wg, format: format, port: port, cType: cType, done: done}
-	err = sys.Bind()
+	err = sys.bind()
+	if nil != err {
+		return
+	}
+	sys.start(msgsChan)
 	return
 }
 
@@ -108,7 +112,7 @@ main:
 }
 
 //Initialize syslog service
-func (this *SyslogService) Start(msgsChan chan *messaging.Food) {
+func (this *SyslogService) start(msgsChan chan *messaging.Food) {
 	switch this.cType {
 	case TCP:
 		{
@@ -124,7 +128,7 @@ func (this *SyslogService) Start(msgsChan chan *messaging.Food) {
 }
 
 //Bind to syslog socket
-func (this *SyslogService) Bind() (err error) {
+func (this *SyslogService) bind() (err error) {
 
 	switch this.cType {
 	case TCP:
@@ -145,6 +149,7 @@ func (this *SyslogService) Bind() (err error) {
 			if nil != err {
 				return err
 			}
+			log.Info(this.udp)
 			// this.ln, err = net.Listen("udp", "127.0.0.1:"+strconv.Itoa(this.port))
 		}
 	default:
