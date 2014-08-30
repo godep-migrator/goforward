@@ -57,14 +57,13 @@ func Run() {
 	proto := ProcessProtocol(*protocol)
 
 	msgForwardChan := make(chan *messaging.Food, 1000)
-	serv, err := sys.NewSyslogService(proto, sys.RFC3164, *port)
+	serv, err := sys.NewSyslogService(proto, sys.RFC3164, *port, msgForwardChan)
 	if nil != err {
 		log.Error("Error creating syslog service: ", err)
 		s <- 1
 	}
 	wg.Add(1)
 	go forward.Run(msgForwardChan, &wg)
-	serv.Start(msgForwardChan)
 	death := <-s //time for shutdown
 	log.Info("Closing syslog server")
 	serv.Close()
