@@ -23,6 +23,7 @@ func main() {
 
 		reg := &consul.AgentServiceRegistration{
 			Name: "goforward",
+			Port: 2025,
 			Check: &consul.AgentServiceCheck{
 				TTL: "10s",
 			},
@@ -30,6 +31,14 @@ func main() {
 		if err := agent.ServiceRegister(reg); err != nil {
 			log.Error("err: ", err)
 		}
+		checks, err := agent.Checks()
+		if err != nil {
+			log.Error("err: ", err)
+		}
+		if _, ok := checks["goforward"]; !ok {
+			log.Error("Checks failed:, ", checks)
+		}
+
 	}
 	log.ReplaceLogger(logger)
 	start.Run()
