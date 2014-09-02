@@ -54,13 +54,6 @@ func RegisterService(name string, port int, ttl int) {
 				if err := agent.ServiceRegister(reg); err != nil {
 					log.Error("err: ", err)
 				}
-				checks, err := agent.Checks()
-				if err != nil {
-					log.Error("err: ", err)
-				}
-				if _, ok := checks["goforward"]; !ok {
-					log.Error("Checks failed:, ", checks)
-				}
 			}
 		}
 	}
