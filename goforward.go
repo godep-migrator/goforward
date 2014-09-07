@@ -1,12 +1,9 @@
 package main
 
 import (
+	"github.com/CapillarySoftware/goconsularis"
 	"github.com/CapillarySoftware/goforward/start"
-	"github.com/CapillarySofware/goconsularis"
-	consul "github.com/armon/consul-api"
 	log "github.com/cihub/seelog"
-	"strconv"
-	"time"
 )
 
 func main() {
