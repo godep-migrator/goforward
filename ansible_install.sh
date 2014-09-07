@@ -7,4 +7,4 @@ export PATH=$PATH:$GOBIN:$GOROOT/bin
 go get github.com/tools/godep
 go install github.com/tools/godep
 godep restore
-go install github.com/CapillarySoftware/goforward
+godep go install github.com/CapillarySoftware/goforward
