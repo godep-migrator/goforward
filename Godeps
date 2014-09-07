@@ -13,7 +13,7 @@
 		},
 		{
 			"ImportPath": "github.com/CapillarySoftware/goconsularis",
-			"Rev": "d283c397701bcbc374dc3e5c64d72fe331fb8b90"
+			"Rev": "f85b0bbd4d17668de66c624e9522af3a4598097b"
 		},
 		{
 			"ImportPath": "github.com/armon/consul-api",
