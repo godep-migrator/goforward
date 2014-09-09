@@ -15,5 +15,3 @@ godep restore
 godep go build
 cp goforward  $install/
 cp seelog.xml $install/
-//remove all source code after install
-#rm -rf $GOPATH
