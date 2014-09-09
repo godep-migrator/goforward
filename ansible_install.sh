@@ -13,8 +13,7 @@ go get github.com/tools/godep
 go install github.com/tools/godep
 godep restore
 godep go build
-mkdir -p $install
 cp goforward  $install/
 cp seelog.xml $install/
 //remove all source code after install
-rm -rf $GOPATH
+#rm -rf $GOPATH
