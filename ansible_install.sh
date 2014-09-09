@@ -6,6 +6,8 @@ export GOBIN=/home/capillaryDeploy/go/bin
 export PATH=$PATH:$GOBIN:$GOROOT/bin
 dir=$GOPATH/src/github.com/CapillarySoftware/goforward
 install=/usr/local/perceptor/goforward
+mkdir -p $install
+mkdir -p $dir
 cd $dir
 go get github.com/tools/godep
 go install github.com/tools/godep
